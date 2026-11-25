@@ -177,12 +177,12 @@
 
   /* ---------------- Sincronização ---------------- */
   // Chaves do app: 'colecao' = [{id, ts, img}] e 'binder' = {name, color, stickers, slots}.
-  // Só id e ts vão para o servidor; a foto (img) fica no aparelho.
+  // Só id, ts e v (imagem no binder: 'o' oficial, 'f' foto) vão para o servidor; a foto (img) fica no aparelho.
   const lerLocal = () => ({ colecao: ls.get('colecao', []), binder: ls.get('binder', null) });
-  const paraServidor = l => ({ colecao: (l.colecao || []).map(({ id, ts }) => ({ id, ts })), binder: l.binder || null });
+  const paraServidor = l => ({ colecao: (l.colecao || []).map(({ id, ts, v }) => (v ? { id, ts, v } : { id, ts })), binder: l.binder || null });
   function gravarLocal(srv) {
     const fotos = new Map(ls.get('colecao', []).map(x => [x.ts, x.img]));
-    const col = (srv.colecao || []).map(x => ({ id: x.id, ts: x.ts, img: fotos.get(x.ts) ?? null }));
+    const col = (srv.colecao || []).map(x => ({ id: x.id, ts: x.ts, img: fotos.get(x.ts) ?? null, ...(x.v ? { v: x.v } : {}) }));
     ls.set('colecao', col);
     if (srv.binder) ls.set('binder', srv.binder);
     window.dispatchEvent(new Event('cartascan:colecao'));
@@ -190,7 +190,10 @@
   function juntar(local, srv) {
     const porTs = new Map();
     for (const x of srv.colecao || []) porTs.set(x.ts, x);
-    for (const x of local.colecao || []) if (!porTs.has(x.ts)) porTs.set(x.ts, x);
+    for (const x of local.colecao || []) {
+      const y = porTs.get(x.ts);
+      porTs.set(x.ts, y ? (x.v ? { ...y, v: x.v } : y) : x);
+    }
     const colecao = [...porTs.values()].sort((a, b) => b.ts - a.ts);
     return { colecao, binder: srv.binder || local.binder || null };
   }

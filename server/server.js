@@ -215,7 +215,7 @@ app.get('/api/img', async (req, res) => {
 function limparColecao(c) {
   if (!c || typeof c !== 'object' || !Array.isArray(c.colecao)) return null;
   const itens = c.colecao.slice(0, 3000).filter(x => x && typeof x.id === 'string' && Number.isFinite(x.ts))
-    .map(x => ({ id: x.id.slice(0, 40), ts: Math.trunc(x.ts) }));
+    .map(x => ({ id: x.id.slice(0, 40), ts: Math.trunc(x.ts), ...(x.v === 'o' || x.v === 'f' ? { v: x.v } : {}) }));
   let binder = null;
   if (c.binder && typeof c.binder === 'object') {
     const b = c.binder;

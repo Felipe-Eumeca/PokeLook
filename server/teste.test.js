@@ -32,10 +32,10 @@ test('fluxo completo', async () => {
   let r = await call('POST', '/api/auth/google', { credential: 'token-bom', consentimento: { aceitouPolitica: true, versao: POLITICA_VERSAO, idadeOk: true } });
   assert.equal(r.status, 200); const j = await r.json(); assert.equal(j.perfil.nome, 'Ash'); assert.equal(j.novo, true);
   cookie = r.headers.get('set-cookie').split(';')[0]; assert.match(cookie, /^pokelook_sessao=/);
-  r = await call('PUT', '/api/colecao', { colecao: { colecao: [{ id: 'mep-22', ts: 1, img: 'data:image/jpeg;base64,AAAA' }], binder: { name: 'Meu', color: '#112233', stickers: [{ k: 'chama', x: 10, y: 200 }], slots: [1, null] } } });
+  r = await call('PUT', '/api/colecao', { colecao: { colecao: [{ id: 'mep-22', ts: 1, img: 'data:image/jpeg;base64,AAAA', v: 'f' }, { id: 'sv1-1', ts: 2, v: 'x' }], binder: { name: 'Meu', color: '#112233', stickers: [{ k: 'chama', x: 10, y: 200 }], slots: [1, null] } } });
   assert.equal(r.status, 200);
   r = await call('GET', '/api/colecao'); const c = await r.json();
-  assert.deepEqual(c.colecao.colecao, [{ id: 'mep-22', ts: 1 }], 'foto não é guardada');
+  assert.deepEqual(c.colecao.colecao, [{ id: 'mep-22', ts: 1, v: 'f' }, { id: 'sv1-1', ts: 2 }], 'foto não é guardada; v só aceita o/f');
   assert.equal(c.colecao.binder.stickers[0].y, 100);
   r = await call('GET', '/api/conta/exportar'); const e = await r.json();
   assert.ok(!JSON.stringify(e).includes('ash@example.com'), 'e-mail não é guardado');

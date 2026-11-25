@@ -199,10 +199,21 @@ ol.flow li::marker{font:400 20px var(--f-display);color:var(--ok)}
 .sticker{position:absolute;width:20%;aspect-ratio:1;padding:0;margin:0;border:0;background:none;cursor:default;touch-action:none;
   filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 3px 2px rgba(0,0,0,.35))}
 .sticker svg,.stk-palette svg{width:100%;height:100%;display:block}
+.sticker.pk{width:24%;background-repeat:no-repeat;image-rendering:pixelated}
+.pk-spr{display:block;width:100%;height:100%;background-repeat:no-repeat;image-rendering:pixelated}
+.stk-palette.pk button{padding:2px}
+.fld input[type=search]{-webkit-appearance:none;appearance:none}
+.imgpick{display:flex;flex-direction:column;gap:8px;border:0;margin:0;padding:0;min-width:0}
+.imgpick legend{font:400 19px var(--f-display);letter-spacing:.03em;color:var(--edge);padding:0;margin-bottom:6px}
+.imgpick .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.imgpick label{display:flex;align-items:center;gap:8px;min-height:46px;padding:6px 12px;border:var(--bw) solid var(--edge);border-radius:999px;background:var(--surface-2);cursor:pointer;font-size:14px}
+.imgpick label:has(input:checked){background:var(--accent);color:var(--accent-ink)}
+.imgpick label:has(input:disabled){opacity:.45;cursor:default}
+.imgpick input{width:20px;height:20px;margin:0;accent-color:var(--edge);flex:none}
 .cover.editing .sticker{cursor:grab}
 .cover.editing .sticker.sel{outline:3px dashed var(--surface);outline-offset:3px;border-radius:4px}
 .fld{display:flex;flex-direction:column;gap:6px}
-.fld > span{font:400 19px var(--f-display);letter-spacing:.03em;color:var(--edge)}
+.fld > span,.fld > label > span{font:400 19px var(--f-display);letter-spacing:.03em;color:var(--edge)}
 .fld input{font:15px var(--f-body);padding:10px 14px;border-radius:999px;border:var(--bw) solid var(--edge);background:#fffdf0;color:var(--ink);min-height:46px;box-sizing:border-box}
 .swatches{display:flex;flex-wrap:wrap;gap:10px}
 .swatch{width:44px;height:44px;border-radius:50%;border:var(--bw) solid var(--edge);cursor:pointer;padding:0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
@@ -328,6 +339,7 @@ ol.flow li::marker{font:400 20px var(--f-display);color:var(--ok)}
       <label class="fld"><span>Nome do binder</span><input id="bd-name" maxlength="30" autocomplete="off" placeholder="Meu binder"></label>
       <div class="fld"><span id="lbl-cor">Cor da capa</span><div class="swatches" id="bd-colors" role="radiogroup" aria-labelledby="lbl-cor"></div></div>
       <div class="fld"><span>Adesivos</span><p class="small muted" id="bd-st-hint">Toque num adesivo para colar na capa. Depois arraste para mudar de lugar.</p><div class="stk-palette" id="bd-palette"></div></div>
+      <div class="fld"><label for="bd-pk-q"><span>Adesivos de Pokémon</span></label><input id="bd-pk-q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Buscar por nome ou número (ex.: Pikachu, 25)"><p class="small muted" id="bd-pk-hint" aria-live="polite"></p><div class="stk-palette pk" id="bd-pk-res"></div></div>
       <div class="row"><button class="btn" type="button" id="bd-st-del" disabled>Tirar adesivo escolhido</button><button class="btn" type="button" id="bd-st-clear">Tirar todos</button></div>
       <button class="btn primary" type="button" id="bd-done">Pronto</button>
     </section>
@@ -922,9 +934,17 @@ async function showResult(id, warpedCanvas, notes = []) {
     el('div', { class: 'mockbox' }, el('span', { class: 'mockbadge', text: 'Dados fictícios · layout do módulo de preços' }), el('label', { class: 'small', for: 'cond', text: 'Estado da carta' }), condSel, prices,
       el('p', { class: 'small muted', text: 'A Liga Pokémon não tem API pública. Para valores reais no app, será preciso uma parceria com a Liga ou outra fonte de preços com API.' })));
 
-  // Ações
+  // Ações: escolher se o binder mostra a imagem oficial ou a foto enviada
+  const hasOfficial = !!(det.img && /^https:\/\//.test(det.img));
+  const pick = el('fieldset', { class: 'imgpick' }, el('legend', { text: 'No binder, mostrar' }));
+  const optO = el('input', { type: 'radio', name: 'imgmode', value: 'o' }), optF = el('input', { type: 'radio', name: 'imgmode', value: 'f' });
+  optO.disabled = !hasOfficial; optF.disabled = !warpedCanvas;
+  (hasOfficial ? optO : optF).checked = true;
+  pick.append(el('div', { class: 'opts' }, el('label', {}, optO, el('span', { text: 'Imagem oficial' })), el('label', {}, optF, el('span', { text: 'Minha foto' }))),
+    el('p', { class: 'small muted', text: !hasOfficial ? 'Esta carta não tem imagem oficial na base, então o binder usa a sua foto.' : !warpedCanvas ? 'Busca sem foto: o binder usa a imagem oficial.' : 'A imagem oficial é o scan da carta (pokemontcg.io / TCGdex). Dá para trocar depois tocando na carta dentro do binder.' }));
+  if (hasOfficial || warpedCanvas) R.append(pick);
   const saveBtn = el('button', { class: 'btn primary', type: 'button', text: 'Salvar na coleção' });
-  saveBtn.onclick = () => { const thumbURL = warpedCanvas ? (() => { const t = document.createElement('canvas'); t.width = 96; t.height = 134; t.getContext('2d').drawImage(warpedCanvas, 0, 0, 96, 134); return t.toDataURL('image/jpeg', .7); })() : null; const col = store.get('colecao', []); const ts = Date.now(); col.unshift({ id: c.id, ts, img: thumbURL }); const ok = store.set('colecao', col); const inB = ok && binderAdd(ts); if (ok) colChanged(); saveBtn.textContent = ok ? (inB ? 'Salva ✓ · no binder' : 'Salva ✓ · binder cheio') : 'Não foi possível salvar neste navegador'; saveBtn.disabled = true; renderColl(); };
+  saveBtn.onclick = () => { const thumbURL = warpedCanvas ? (() => { const t = document.createElement('canvas'); t.width = 96; t.height = 134; t.getContext('2d').drawImage(warpedCanvas, 0, 0, 96, 134); return t.toDataURL('image/jpeg', .7); })() : null; const col = store.get('colecao', []); const ts = Date.now(); col.unshift({ id: c.id, ts, img: thumbURL, v: optO.checked ? 'o' : 'f' }); const ok = store.set('colecao', col); const inB = ok && binderAdd(ts); if (ok) colChanged(); saveBtn.textContent = ok ? (inB ? 'Salva ✓ · no binder' : 'Salva ✓ · binder cheio') : 'Não foi possível salvar neste navegador'; saveBtn.disabled = true; renderColl(); };
   R.append(el('div', { class: 'row' }, saveBtn));
 
   // Outras candidatas
@@ -950,7 +970,7 @@ function getBinder() {
   if (!b || typeof b !== 'object') { b = { name: 'Meu binder', color: COVER_COLORS[0][1], stickers: [], slots: col.slice().reverse().slice(0, BINDER_MAX).map(x => x.ts) }; dirty = true; }
   b.name = typeof b.name === 'string' ? b.name.slice(0, 30) : 'Meu binder';
   if (!/^#[0-9a-f]{6}$/i.test(b.color || '')) b.color = COVER_COLORS[0][1];
-  b.stickers = (Array.isArray(b.stickers) ? b.stickers : []).filter(s => s && STICKERS[s.k]).slice(0, MAX_STICKERS);
+  b.stickers = (Array.isArray(b.stickers) ? b.stickers : []).filter(s => s && validSticker(s.k)).slice(0, MAX_STICKERS);
   const valid = new Set(col.map(x => x.ts)), seen = new Set();
   const slots = (Array.isArray(b.slots) ? b.slots : []).filter(t => valid.has(t) && !seen.has(t) && seen.add(t)).slice(0, BINDER_MAX);
   if (!Array.isArray(b.slots) || slots.length !== b.slots.length) { b.slots = slots; dirty = true; }
@@ -960,6 +980,55 @@ function getBinder() {
 function saveBinder(b) { const ok = store.set('binder', b); colChanged(); return ok; }
 function binderAdd(ts) { const b = getBinder(); if (b.slots.includes(ts)) return true; if (b.slots.length >= BINDER_MAX) return false; b.slots.push(ts); saveBinder(b); return true; }
 function binderRemove(ts) { const b = getBinder(); b.slots = b.slots.filter(t => t !== ts); saveBinder(b); }
+
+// Imagem de cada carta no binder: 'o' = imagem oficial (scan da base aberta), 'f' = foto enviada.
+// Entradas antigas sem 'v' mostram a foto quando existe.
+const imgMode = x => x.v === 'o' || x.v === 'f' ? x.v : (x.img ? 'f' : 'o');
+function setImgMode(ts, v) { const col = store.get('colecao', []); const e = col.find(y => y.ts === ts); if (!e) return; e.v = v; store.set('colecao', col); colChanged(); renderColl(); }
+const smallImg = u => u.replace(/_hires\.png$/, '.png').replace(/\/high\.(png|webp|jpg)$/, '/low.$1').replace(/\/large$/, '/medium');
+const OFFICIAL = new Map();
+function officialURL(c) {
+  if (!OFFICIAL.has(c.id)) OFFICIAL.set(c.id, setDetails(c.set.id).then(d => { const u = (d[c.id] || {}).img; return u && /^https:\/\//.test(u) ? u : null; }).catch(() => null));
+  return OFFICIAL.get(c.id);
+}
+function cardFace(x, size) {
+  const mode = imgMode(x), photo = () => el('img', { src: x.img, alt: '' });
+  if (mode === 'f' && x.img) return photo();
+  const ph = el('span', { class: 'nosnap' }, dexSprite(x.c, size), el('span', { class: 'nm', text: x.c.name }));
+  officialURL(x.c).then(u => {
+    if (!ph.isConnected && !ph.parentNode) return;
+    if (!u) { if (x.img) ph.replaceWith(photo()); return; }
+    const im = el('img', { alt: '', referrerpolicy: 'no-referrer', decoding: 'async' });
+    im.onload = () => ph.replaceWith(im);
+    im.onerror = () => { if (im.src !== u) { im.src = u; } else if (x.img) ph.replaceWith(photo()); };
+    im.src = smallImg(u);
+  });
+  return ph;
+}
+
+// Adesivos de Pokémon: k = 'p' + número da Pokédex, desenhados com o atlas de sprites (32 colunas × 33 linhas).
+const isPkSticker = k => /^p\d{1,4}$/.test(k) && +k.slice(1) >= 1 && +k.slice(1) <= 1025;
+const validSticker = k => !!STICKERS[k] || isPkSticker(k);
+const stickerName = k => STICKERS[k] ? STICKERS[k].n : (DB.dex[k.slice(1)] || {}).n || `Pokémon nº ${k.slice(1)}`;
+function pkSpriteStyle(n) { const col = (n - 1) % 32, row = Math.floor((n - 1) / 32); return `background-image:url(data/sprites.png);background-size:3200% 3300%;background-position:${col / 31 * 100}% ${row / 32 * 100}%`; }
+function fillSticker(node, k) { if (STICKERS[k]) node.innerHTML = STICKERS[k].s; else { node.classList.add('pk'); node.style.cssText += ';' + pkSpriteStyle(+k.slice(1)); } return node; }
+function addSticker(k) { const b = getBinder(); if (b.stickers.length >= MAX_STICKERS) return; b.stickers.push({ k, x: Math.round(18 + Math.random() * 54), y: Math.round(34 + Math.random() * 38) }); saveBinder(b); BV.stSel = b.stickers.length - 1; renderColl(); }
+const fold = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function renderPkSearch() {
+  const q = fold(($('#bd-pk-q').value || '').trim()), R = $('#bd-pk-res'), H = $('#bd-pk-hint');
+  let nums = [];
+  if (!q) {
+    nums = [...new Set(collItems().map(x => x.c.dex).filter(Boolean))].slice(0, 12);
+    H.textContent = nums.length ? 'Pokémon da sua coleção. Busque pelo nome ou número para ver os 1.025.' : 'Busque pelo nome ou número entre os 1.025 Pokémon.';
+  } else {
+    const all = Object.entries(DB.dex), num = /^\d+$/.test(q) ? +q : null, starts = [], has = [];
+    for (const [n, d] of all) { const nm = fold(d.n); if (num ? +n === num || n.startsWith(q) : nm.startsWith(q)) starts.push(+n); else if (!num && nm.includes(q)) has.push(+n); }
+    const found = [...starts, ...has]; nums = found.slice(0, 24);
+    H.textContent = !found.length ? 'Nenhum Pokémon encontrado.' : found.length > 24 ? `Mostrando 24 de ${found.length}. Digite mais letras para achar.` : `${found.length} encontrado${found.length > 1 ? 's' : ''}.`;
+  }
+  const full = getBinder().stickers.length >= MAX_STICKERS;
+  R.replaceChildren(...nums.map(n => { const nm = (DB.dex[String(n)] || {}).n || n; const bt = el('button', { type: 'button', 'aria-label': `Colar adesivo ${nm}`, title: `${nm} · nº ${n}` }, el('span', { class: 'pk-spr', style: pkSpriteStyle(n) })); bt.disabled = full; bt.onclick = () => addSticker('p' + n); return bt; }));
+}
 const BV = { view: 'binder', open: false, edit: false, page: 0, sel: -1, stSel: -1 };
 
 // Sprite da Pokédex (conteúdo da base aberta) para cartas salvas sem foto
@@ -995,7 +1064,7 @@ function renderAll(items, b) {
     const bd = el('button', { class: `bd${on ? ' on' : ''}`, type: 'button', 'aria-pressed': String(on), text: on ? '✓ Binder' : full ? 'Binder cheio' : '+ Binder' });
     if (!on && full) bd.disabled = true;
     bd.onclick = () => { if (on) binderRemove(x.ts); else binderAdd(x.ts); renderColl(); };
-    L.append(el('div', { class: 'citem' }, x.img ? el('img', { src: x.img, alt: '' }) : el('div', { class: 'ph' }, dexSprite(x.c, 72)),
+    L.append(el('div', { class: 'citem' }, x.img || imgMode(x) === 'o' ? cardFace(x, 72) : el('div', { class: 'ph' }, dexSprite(x.c, 72)),
       el('div', { style: 'min-width:0' }, el('b', { text: x.c.name }), counts[x.id] > 1 ? el('span', { class: 'chip', style: 'margin-left:6px', text: `×${counts[x.id]}` }) : null, el('div', { class: 'small muted mono', text: `${numLabel(x.c.number, x.c.set)} · ${x.c.set.name}` })),
       bd, del));
   });
@@ -1007,14 +1076,13 @@ function renderCover(b) {
   $('#bd-plate').textContent = b.name || 'Meu binder';
   const host = $('#bd-stickers'); host.replaceChildren();
   b.stickers.forEach((s, i) => {
-    const st = el('span', { class: `sticker${BV.edit && BV.stSel === i ? ' sel' : ''}`, style: `left:${s.x}%;top:${s.y}%`, title: STICKERS[s.k].n });
-    st.innerHTML = STICKERS[s.k].s;
+    const st = fillSticker(el('span', { class: `sticker${BV.edit && BV.stSel === i ? ' sel' : ''}`, style: `left:${s.x}%;top:${s.y}%`, title: stickerName(s.k) }), s.k);
     if (BV.edit) dragSticker(st, i);
     host.append(st);
   });
   $('#bd-st-del').disabled = !(BV.edit && BV.stSel >= 0 && BV.stSel < b.stickers.length);
   $('#bd-st-clear').disabled = !b.stickers.length;
-  document.querySelectorAll('#bd-palette button').forEach(x => x.disabled = b.stickers.length >= MAX_STICKERS);
+  document.querySelectorAll('#bd-palette button, #bd-pk-res button').forEach(x => x.disabled = b.stickers.length >= MAX_STICKERS);
   $('#bd-st-hint').textContent = b.stickers.length >= MAX_STICKERS ? `A capa já tem ${MAX_STICKERS} adesivos, o máximo. Tire um para colar outro.` : 'Toque num adesivo para colar na capa. Depois arraste para mudar de lugar.';
 }
 function dragSticker(node, i) {
@@ -1035,6 +1103,7 @@ function renderBinder(items, b) {
   $('#bd-cover-view').hidden = BV.open; $('#bd-pages').hidden = !BV.open;
   renderCover(b);
   if (BV.edit) {
+    if (!$('#bd-pk-res').childElementCount && !$('#bd-pk-q').value) renderPkSearch();
     if (document.activeElement !== $('#bd-name')) $('#bd-name').value = b.name;
     document.querySelectorAll('#bd-colors .swatch').forEach(s => s.setAttribute('aria-checked', String(s.dataset.c.toLowerCase() === b.color.toLowerCase())));
   }
@@ -1046,7 +1115,7 @@ function renderBinder(items, b) {
     const gi = BV.page * PER_PAGE + k, ts = b.slots[gi], x = ts != null ? byTs.get(ts) : null;
     if (!x) { G.append(el('div', { class: 'pocket empty', 'aria-label': `Espaço ${k + 1} vazio` })); continue; }
     const p = el('button', { class: `pocket${BV.sel === gi ? ' sel' : ''}`, type: 'button', 'aria-label': `${x.c.name}, ${numLabel(x.c.number, x.c.set)}`, 'aria-pressed': String(BV.sel === gi) },
-      x.img ? el('img', { src: x.img, alt: '' }) : el('span', { class: 'nosnap' }, dexSprite(x.c, 64), el('span', { class: 'nm', text: x.c.name })));
+      cardFace(x, 64));
     p.onclick = () => { BV.sel = BV.sel === gi ? -1 : gi; renderColl(); };
     G.append(p);
   }
@@ -1064,7 +1133,9 @@ function renderBinder(items, b) {
     const prev = el('button', { class: 'btn', type: 'button', text: '◂ Mover' }), next = el('button', { class: 'btn', type: 'button', text: 'Mover ▸' }), out = el('button', { class: 'btn', type: 'button', text: 'Tirar do binder' });
     prev.disabled = gi === 0; next.disabled = gi >= b.slots.length - 1;
     prev.onclick = () => mv(-1); next.onclick = () => mv(1); out.onclick = () => { binderRemove(b.slots[gi]); BV.sel = -1; renderColl(); };
-    T.append(el('div', { class: 'who', text: x.c.name }), el('div', { class: 'small muted mono', text: `${numLabel(x.c.number, x.c.set)} · ${x.c.set.name} · espaço ${gi % PER_PAGE + 1} da página ${Math.floor(gi / PER_PAGE) + 1}` }), el('div', { class: 'row' }, prev, next, out));
+    const mode = imgMode(x), sw = el('button', { class: 'btn', type: 'button', text: mode === 'f' ? 'Usar imagem oficial' : 'Usar minha foto' });
+    sw.onclick = () => setImgMode(x.ts, mode === 'f' ? 'o' : 'f');
+    T.append(el('div', { class: 'who', text: x.c.name }), el('div', { class: 'small muted mono', text: `${numLabel(x.c.number, x.c.set)} · ${x.c.set.name} · espaço ${gi % PER_PAGE + 1} da página ${Math.floor(gi / PER_PAGE) + 1}` }), el('div', { class: 'row' }, prev, next, out, x.img ? sw : null));
   } else if (!b.slots.length) T.append(el('p', { class: 'small muted', text: 'O binder está vazio. Salve cartas pelo scanner ou toque em “+ Binder” em “Todas as cartas”.' }));
 }
 function goPage(pg) { if (pg < 0 || pg >= BINDER_PAGES || pg === BV.page) return; const dx = pg > BV.page ? '24px' : '-24px'; BV.page = pg; BV.sel = -1; renderColl(); const g = $('#bd-grid'); g.style.setProperty('--dx', dx); g.classList.remove('turn'); void g.offsetWidth; g.classList.add('turn'); }
@@ -1084,7 +1155,9 @@ function goPage(pg) { if (pg < 0 || pg >= BINDER_PAGES || pg === BV.page) return
   const C = $('#bd-colors');
   COVER_COLORS.forEach(([n, c]) => { const s = el('button', { class: 'swatch', type: 'button', role: 'radio', 'aria-label': n, 'aria-checked': 'false', 'data-c': c, style: `background:${c}` }); s.onclick = () => { const b = getBinder(); b.color = c; saveBinder(b); renderColl(); }; C.append(s); });
   const P = $('#bd-palette');
-  Object.entries(STICKERS).forEach(([k, v]) => { const s = el('button', { type: 'button', 'aria-label': `Colar adesivo ${v.n}`, title: v.n }); s.innerHTML = v.s; s.onclick = () => { const b = getBinder(); if (b.stickers.length >= MAX_STICKERS) return; b.stickers.push({ k, x: Math.round(18 + Math.random() * 58), y: Math.round(34 + Math.random() * 40) }); saveBinder(b); BV.stSel = b.stickers.length - 1; renderColl(); }; P.append(s); });
+  Object.entries(STICKERS).forEach(([k, v]) => { const s = el('button', { type: 'button', 'aria-label': `Colar adesivo ${v.n}`, title: v.n }); s.innerHTML = v.s; s.onclick = () => addSticker(k); P.append(s); });
+  let pkT; $('#bd-pk-q').oninput = () => { clearTimeout(pkT); pkT = setTimeout(renderPkSearch, 120); };
+  $('#bd-pk-q').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); renderPkSearch(); } };
   $('#bd-st-del').onclick = () => { const b = getBinder(); if (BV.stSel >= 0) b.stickers.splice(BV.stSel, 1); BV.stSel = -1; saveBinder(b); renderColl(); };
   $('#bd-st-clear').onclick = () => { const b = getBinder(); b.stickers = []; BV.stSel = -1; saveBinder(b); renderColl(); };
   window.addEventListener('cartascan:colecao', e => { if (e.detail && e.detail.source === 'app') return; renderColl(); });
