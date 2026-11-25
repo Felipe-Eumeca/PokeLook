@@ -102,11 +102,13 @@ const pseudonimo = sub => crypto.createHmac('sha256', SEGREDO + ':uid').update(S
 if (process.env.SITE_DIR) app.use(express.static(process.env.SITE_DIR));
 app.get('/', (req, res) => res.type('text').send('PokeLook API. Veja /api/saude.'));
 app.get('/api/saude', (req, res) => res.json({ ok: true, armazenamento: db.tipo, googleConfigurado: !!GOOGLE_CLIENT_ID }));
-app.get('/api/config', (req, res) => res.json({ googleClientId: GOOGLE_CLIENT_ID, politicaVersao: POLITICA_VERSAO }));
+// Em produção, só oferece login quando o banco está configurado (senão os dados ficariam só na memória).
+const LOGIN_ATIVO = !!GOOGLE_CLIENT_ID && (!PROD || db.tipo !== 'memoria');
+app.get('/api/config', (req, res) => res.json({ googleClientId: LOGIN_ATIVO ? GOOGLE_CLIENT_ID : '', politicaVersao: POLITICA_VERSAO }));
 
 app.post('/api/auth/google', exigeCabecalho, async (req, res) => {
   const { credential, consentimento } = req.body || {};
-  if (!GOOGLE_CLIENT_ID) return res.status(503).json({ erro: 'Login com Google ainda não configurado no servidor.' });
+  if (!LOGIN_ATIVO) return res.status(503).json({ erro: 'Login com Google ainda não configurado no servidor.' });
   if (!credential) return res.status(400).json({ erro: 'Faltou o token do Google.' });
   if (!consentimento?.aceitouPolitica || consentimento.versao !== POLITICA_VERSAO || !consentimento.idadeOk)
     return res.status(400).json({ erro: 'É preciso aceitar a Política de Privacidade vigente e confirmar a idade.' });
