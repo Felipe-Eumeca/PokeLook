@@ -1,0 +1,21 @@
+{
+  "name": "pokelook-api",
+  "version": "1.0.0",
+  "description": "API do PokeLook (login Google, coleção, imagens)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cookie-parser": "1.4.7",
+    "express": "4.22.3",
+    "google-auth-library": "11.3.4"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true
+}

@@ -1,0 +1,1175 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>PokeLook TCG</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">
+<style>
+/* Mundo: céu de pixel de jogo clássico, painéis creme com contorno verde-escuro, pílulas verdes.
+   Assinatura: as etapas da visão ocupam os espaços de uma "caixa" de armazenamento; a coleção usa a mesma grade. */
+:root{
+  --sky-1:#3f97dc; --sky-2:#56aae6; --sky-3:#74bfee; --sky-4:#9ad3f4; --sky-ink:#0e2d4a;
+  --surface:#fbf6dc; --surface-2:#f1e7bd; --surface-3:#e6d9a2; --edge:#23361f; --ink:#1f2b1a; --muted:#57634a; --line:#cdbf8c;
+  --accent:#78dca0; --accent-2:#5cc887; --accent-ink:#163021; --scan:#1f6fb8;
+  --ok:#2f8a46; --ok-bg:#9be6b4; --warn:#8a5a00; --warn-bg:#ffd77a; --bad:#a3271d; --bad-bg:#ffb3a6; --mock:#6b4bb3; --mock-bg:#e4d9ff;
+  --f-display:"Jersey 10", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --f-body:"M PLUS Rounded 1c", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono:"Jersey 10", "M PLUS Rounded 1c", ui-monospace, monospace;
+  --r:12px; --bw:3px;
+  --lift:0 6px 16px rgba(12,45,80,.22);
+  --clouds:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="720" height="170" shape-rendering="crispEdges"%3E%3Cpath fill="%23fff" d="M78 12h24v6h-24zM66 18h48v6h-48zM126 18h6v6h-6zM54 24h84v6h-84zM48 30h96v6h-96zM42 36h108v6h-108zM36 42h120v6h-120z"/%3E%3Cpath fill="%23d6ecfa" d="M42 48h108v6h-108z"/%3E%3Cpath fill="%23fff" d="M396 84h18v6h-18zM384 90h42v6h-42zM378 96h60v6h-60zM372 102h72v6h-72z"/%3E%3Cpath fill="%23d6ecfa" d="M378 108h60v6h-60z"/%3E%3Cpath fill="%23fff" d="M594 120h24v6h-24zM582 126h48v6h-48zM642 126h6v6h-6zM570 132h84v6h-84zM564 138h96v6h-96zM558 144h108v6h-108zM552 150h120v6h-120z"/%3E%3Cpath fill="%23d6ecfa" d="M558 156h108v6h-108z"/%3E%3C/svg%3E');
+  --grass:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="40" shape-rendering="crispEdges"%3E%3Crect y="8" width="64" height="32" fill="%233e9a3c"/%3E%3Cpath fill="%236fcf55" d="M8 0h4v4h-4zM40 0h4v4h-4zM4 4h12v4h-12zM24 4h4v4h-4zM36 4h12v4h-12zM56 4h4v4h-4z"/%3E%3Cpath fill="%232f7d31" d="M24 12h4v4h-4zM48 16h4v4h-4z"/%3E%3C/svg%3E');
+  --stars:none; --head-ink:var(--sky-ink); --head-sub:#163b5e;
+}
+/* Noite: o céu escurece e ganha estrelas; os painéis creme continuam iguais, como caixas de diálogo. */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --sky-1:#0b1633; --sky-2:#11204a; --sky-3:#182c5e; --sky-4:#223a72; --head-ink:#fbf6dc; --head-sub:#c9d8f2;
+  --surface:#f4edcc; --surface-2:#e8dcae; --surface-3:#dccd92;
+  --stars:var(--stars-svg); --lift:0 6px 18px rgba(0,0,0,.45)}}
+:root[data-theme="dark"]{
+  --sky-1:#0b1633; --sky-2:#11204a; --sky-3:#182c5e; --sky-4:#223a72; --head-ink:#fbf6dc; --head-sub:#c9d8f2;
+  --surface:#f4edcc; --surface-2:#e8dcae; --surface-3:#dccd92;
+  --stars:var(--stars-svg); --lift:0 6px 18px rgba(0,0,0,.45)}
+:root{--stars-svg:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" shape-rendering="crispEdges"%3E%3Crect x="24" y="16" width="4" height="4" fill="%23fff"/%3E%3Crect x="132" y="60" width="2" height="2" fill="%23ffe9a8"/%3E%3Crect x="210" y="24" width="4" height="4" fill="%23cfe3ff"/%3E%3Crect x="300" y="88" width="2" height="2" fill="%23fff"/%3E%3Crect x="364" y="36" width="4" height="4" fill="%23ffe9a8"/%3E%3Crect x="72" y="120" width="2" height="2" fill="%23cfe3ff"/%3E%3Crect x="176" y="148" width="4" height="4" fill="%23fff"/%3E%3Crect x="256" y="196" width="2" height="2" fill="%23ffe9a8"/%3E%3Crect x="40" y="232" width="4" height="4" fill="%23fff"/%3E%3Crect x="340" y="252" width="2" height="2" fill="%23cfe3ff"/%3E%3Crect x="116" y="276" width="2" height="2" fill="%23fff"/%3E%3Crect x="388" y="160" width="4" height="4" fill="%23fff"/%3E%3C/svg%3E')}
+[hidden]{display:none!important}
+html{color-scheme:light;background:var(--sky-2)}
+html,body{min-height:100%}
+body{margin:0;background:transparent;color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:var(--accent-ink)}
+/* Céu: faixas de cor em degraus (sem degradê suave), nuvens de pixel que andam devagar e grama no rodapé. */
+.sky{position:fixed;inset:0;z-index:-1;overflow:hidden;
+  background:linear-gradient(180deg,var(--sky-1) 0 22%,var(--sky-2) 22% 46%,var(--sky-3) 46% 70%,var(--sky-4) 70% 100%)}
+.sky::before{content:"";position:absolute;inset:0;background:var(--stars) 0 0/400px 300px repeat,var(--clouds) 0 40px/720px 170px repeat-x;animation:drift 140s linear infinite}
+.sky::after{content:"";position:absolute;left:0;right:0;bottom:0;height:120px;background:var(--grass) 0 0/64px 40px repeat-x,linear-gradient(#3e9a3c,#2f7d31) 0 40px/100% 100% no-repeat}
+@keyframes drift{to{background-position:0 0,-720px 40px}}
+@media (prefers-reduced-motion:reduce){.sky::before{animation:none}}
+.app{display:flex;flex-direction:column;min-height:100vh}
+header.top{padding-top:max(18px,env(safe-area-inset-top,0px));padding-bottom:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  max-width:760px;width:100%;margin:0 auto;box-sizing:border-box;display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;flex:none;color:var(--edge);background:var(--surface);border:var(--bw) solid var(--edge);border-radius:10px;padding:5px;box-sizing:border-box;box-shadow:var(--lift)}
+header.top h1{font-family:var(--f-display);font-size:42px;font-weight:400;letter-spacing:.03em;margin:0;line-height:1;color:var(--head-ink)}
+header.top .sub{font:400 17px/1.25 var(--f-display);color:var(--head-sub);margin-left:auto;text-align:right;letter-spacing:.02em}
+main{flex:1;padding-block:12px 112px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  max-width:760px;width:100%;margin:0 auto;box-sizing:border-box;display:flex;flex-direction:column;gap:18px}
+/* Doca de abas: painel creme preso embaixo, aba ativa vira pílula verde. */
+nav.tabs{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;max-width:520px;margin:0 auto;
+  background:var(--surface);border:var(--bw) solid var(--edge);border-radius:16px;box-shadow:var(--lift);display:flex;padding:6px;gap:6px}
+nav.tabs button{flex:1;background:none;border:2px solid transparent;border-radius:11px;color:var(--muted);font:400 17px var(--f-display);letter-spacing:.03em;padding:6px 4px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-height:52px;transition:background-color .2s cubic-bezier(.16,1,.3,1),color .2s}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--edge);color:var(--accent-ink)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,label.btn:focus-within{outline:3px solid var(--scan);outline-offset:3px}
+h2{font-family:var(--f-display);font-size:29px;font-weight:400;margin:0;letter-spacing:.03em;line-height:1.05;text-wrap:balance;color:var(--edge)}
+h3{font-family:var(--f-display);font-size:20px;font-weight:400;margin:10px 0 0;letter-spacing:.06em;text-transform:uppercase;color:var(--edge);display:flex;align-items:center;gap:8px}
+h3::after{content:"";flex:1;height:3px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 9px)}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.mono{font-family:var(--f-mono);font-size:1.2em;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+a{color:var(--scan);text-underline-offset:3px}
+/* Painel = caixa de diálogo do jogo */
+.panel{background:var(--surface);border:var(--bw) solid var(--edge);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0;
+  box-shadow:inset 0 -4px 0 var(--surface-2),var(--lift)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:var(--bw) solid var(--edge);background:var(--surface-2);color:var(--ink);
+  font:400 20px var(--f-display);letter-spacing:.03em;padding:9px 18px;cursor:pointer;text-decoration:none;min-height:46px;box-sizing:border-box;
+  box-shadow:inset 0 -4px 0 var(--surface-3);transition:transform .12s cubic-bezier(.16,1,.3,1),box-shadow .12s,background-color .2s;-webkit-tap-highlight-color:transparent}
+.btn:hover{background:var(--surface)}
+.btn:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 var(--surface-3)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);box-shadow:inset 0 -4px 0 var(--accent-2)}
+.btn.primary:hover{background:#8be6ae}
+.btn.primary:active{box-shadow:inset 0 -1px 0 var(--accent-2)}
+.btn svg{width:24px;height:24px;flex:none}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.capture{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.capture .btn{width:100%}
+.capture .btn.primary{grid-column:1/-1;min-height:62px;font-size:26px}
+.pick{position:relative;overflow:hidden}
+.pick input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:100px;z-index:1}
+.capmsg{font-size:13px;color:var(--muted);min-height:18px}
+.capmsg.err{color:var(--bad);font-weight:700}
+details.diag{background:var(--surface);border:var(--bw) solid var(--edge);border-radius:var(--r);padding:12px 16px;box-shadow:var(--lift)}
+details.diag summary{cursor:pointer;font:400 20px var(--f-display);letter-spacing:.03em;color:var(--edge)}
+details.diag pre{font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;background:var(--surface-2);padding:8px;border-radius:8px;margin:8px 0;border:2px solid var(--line)}
+/* Visor = tela escura com moldura */
+.viewfinder{position:relative;border-radius:10px;overflow:hidden;background:#0d1a14;aspect-ratio:4/3;max-width:100%;border:var(--bw) solid var(--edge)}
+.viewfinder canvas{width:100%;height:100%;object-fit:contain;display:block;touch-action:none}
+.viewfinder .tag{position:absolute;left:10px;top:10px;background:var(--surface);color:var(--edge);border:2px solid var(--edge);font:400 16px var(--f-display);padding:2px 10px;border-radius:999px;letter-spacing:.06em}
+.handle-hint{font-size:13.5px;color:var(--muted)}
+/* Assinatura: caixa de armazenamento. Cada etapa é um espaço numerado que acende quando termina. */
+.stages{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;padding:10px;background:var(--surface-2);border:2px solid var(--line);border-radius:10px;
+  background-image:radial-gradient(var(--surface-3) 1.5px,transparent 1.5px);background-size:12px 12px}
+.stage{display:flex;flex-direction:column;gap:4px;min-width:0}
+.stage canvas{width:100%;aspect-ratio:1;height:auto;object-fit:contain;background:var(--surface);border:var(--bw) solid var(--edge);border-radius:10px;display:block;box-sizing:border-box;
+  transition:background-color .35s,border-color .35s,transform .35s cubic-bezier(.16,1,.3,1)}
+.stage .n{font:400 16px var(--f-display);color:var(--accent-ink);background:var(--accent);border:2px solid var(--edge);border-radius:999px;width:max-content;padding:0 7px;margin-top:-18px;margin-left:6px;position:relative;letter-spacing:.04em}
+.stage .t{font-size:12px;font-weight:700;line-height:1.25;color:var(--ink)}
+.stage .ms{font:400 16px var(--f-display);color:var(--muted)}
+.stage.pending canvas{background:transparent;border-style:dashed;border-color:var(--line)}
+.stage.pending .n{background:var(--surface);color:var(--muted);border-color:var(--line)}
+.stage:not(.pending) canvas{animation:slot .45s cubic-bezier(.16,1,.3,1)}
+@keyframes slot{from{transform:scale(.88)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.stage:not(.pending) canvas{animation:none}}
+.status{display:flex;align-items:center;gap:8px;font:400 18px var(--f-display);color:var(--edge);min-height:22px;letter-spacing:.02em}
+.spin{width:12px;height:12px;background:var(--accent);border:2px solid var(--edge);flex:none;animation:sp 1s steps(4) infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.ocr{display:grid;grid-template-columns:1fr;gap:8px}
+.ocr .roi{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.ocr canvas{width:100%;max-height:56px;object-fit:contain;object-position:left;background:#fff;border:2px solid var(--line);border-radius:6px}
+.ocr .read{font:13px/1.45 ui-monospace,Menlo,monospace;word-break:break-word;color:var(--ink)}
+/* Resultado */
+.result-head{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;align-items:start}
+.result-head canvas{width:112px;border-radius:8px;border:var(--bw) solid var(--edge);display:block}
+.cardname{font-family:var(--f-display);font-size:42px;font-weight:400;line-height:.95;margin:0;text-wrap:balance;color:var(--edge)}
+.setline{font-size:14px;color:var(--muted)}
+.conf{display:inline-flex;align-items:center;gap:6px;font:400 17px var(--f-display);letter-spacing:.03em;padding:2px 10px;border-radius:999px;border:2px solid var(--edge);width:max-content;color:var(--ink)}
+.conf.alta{background:var(--ok-bg)} .conf.media{background:var(--warn-bg)} .conf.baixa{background:var(--bad-bg)}
+.meter{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:min(200px,100%);padding:3px;border:2px solid var(--edge);border-radius:6px;background:var(--surface-2);box-sizing:border-box}
+.meter b{height:8px;border-radius:2px;background:var(--surface-3)}
+.meter.alta b.on{background:var(--ok)} .meter.media b.on{background:#d89a00} .meter.baixa b.on{background:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:400 16px var(--f-display);letter-spacing:.03em;padding:2px 10px;border-radius:999px;background:var(--surface-2);border:2px solid var(--edge);color:var(--ink)}
+.type{color:#fff;text-shadow:1px 0 0 #1b1b1b,-1px 0 0 #1b1b1b,0 1px 0 #1b1b1b,0 -1px 0 #1b1b1b}
+dl.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:0;font-size:14.5px}
+dl.kv dt{color:var(--muted)} dl.kv dd{margin:0;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.attack{border-top:2px dashed var(--line);padding-top:8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+.attack b{font-weight:800} .attack .dmg{font:400 26px var(--f-display);text-align:right;color:var(--edge)}
+.attack .txt{grid-column:1/-1;font-size:13.5px;color:var(--muted)}
+.cost{display:inline-flex;gap:2px;margin-right:6px;vertical-align:-2px}
+.cost i{width:13px;height:13px;border-radius:50%;display:inline-block;border:2px solid var(--edge);box-sizing:border-box}
+.dex{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start}
+.sprite{width:120px;height:120px;background-repeat:no-repeat;image-rendering:pixelated;background-color:var(--surface-2);border-radius:10px;border:var(--bw) solid var(--edge);box-sizing:content-box}
+.stats{display:grid;grid-template-columns:max-content 34px minmax(0,1fr);gap:5px 8px;align-items:center;font-size:13.5px}
+.stats .mono{text-align:right}
+.stats .bar{height:10px;border-radius:3px;background:var(--surface-2);overflow:hidden;border:2px solid var(--edge)}
+.stats .bar i{display:block;height:100%;background:var(--accent-2)}
+.flavor{font-size:14px;background:var(--surface-2);border-radius:10px;padding:10px 12px;color:var(--ink)}
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.compare figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.compare figcaption{font:400 17px var(--f-display);letter-spacing:.03em;color:var(--edge)}
+.compare canvas,.compare img,.compare .noimg{width:100%;aspect-ratio:63/88;object-fit:contain;border-radius:10px;border:var(--bw) solid var(--edge);background:var(--surface-2);display:block;box-sizing:border-box}
+.compare .noimg{display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:13px;color:var(--muted);border-style:dashed;border-color:var(--line)}
+.mockbox{border:2px dashed var(--mock);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:color-mix(in srgb,var(--mock-bg) 35%,var(--surface))}
+.mockbadge{font:400 16px var(--f-display);color:var(--mock);letter-spacing:.06em;text-transform:uppercase}
+.prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center}
+.prices div{background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:8px 4px}
+.prices b{display:block;font:400 22px var(--f-display);font-variant-numeric:tabular-nums}
+.prices span{font-size:12px;color:var(--muted)}
+select{font:inherit;min-height:44px}
+.cands{display:flex;flex-direction:column;gap:8px}
+.cand{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--surface-2);border:2px solid var(--edge);border-radius:10px;padding:8px 12px;text-align:left;color:var(--ink);font:inherit;cursor:pointer;min-height:48px}
+.cand:hover{background:var(--surface)}
+.cand .s{font:400 17px var(--f-display);color:var(--muted)}
+.manual{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;gap:8px}
+.manual input{min-width:0;font:15px var(--f-body);padding:10px 14px;border-radius:999px;border:var(--bw) solid var(--edge);background:#fffdf0;color:var(--ink);min-height:46px;box-sizing:border-box;caret-color:var(--scan)}
+.manual input::placeholder{color:#5f6a52}
+@media (max-width:480px){.manual{grid-template-columns:minmax(0,1fr) 108px}.manual .btn{grid-column:1/-1}}
+.notice{font-size:14px;padding:10px 12px;border-radius:10px;background:var(--warn-bg);border:2px solid var(--edge);color:var(--ink)}
+main > .notice{box-shadow:var(--lift)}
+/* Coleção = a mesma caixa, com as cartas nos espaços */
+.coll-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.coll-sum div{background:var(--surface);border:var(--bw) solid var(--edge);border-radius:var(--r);padding:10px 12px;box-shadow:var(--lift)}
+.coll-sum b{display:block;font:400 36px/1.1 var(--f-display);color:var(--edge)}
+.coll-sum span{font:400 17px var(--f-display);color:var(--muted);letter-spacing:.03em}
+.coll-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;padding:10px;background:var(--surface);border:var(--bw) solid var(--edge);border-radius:var(--r);box-shadow:var(--lift);
+  background-image:radial-gradient(var(--surface-2) 1.5px,transparent 1.5px);background-size:12px 12px}
+.coll-list > .panel{grid-column:1/-1;box-shadow:none;border:0;background:transparent;padding:6px}
+.citem{position:relative;display:flex;flex-direction:column;gap:4px;background:var(--surface-2);border:var(--bw) solid var(--edge);border-radius:10px;padding:6px;min-width:0}
+.citem img,.citem > div:first-child:empty{width:100%;aspect-ratio:96/134;border-radius:6px;display:block;object-fit:cover;background:var(--surface-3)}
+.citem b{font:400 18px var(--f-display);letter-spacing:.02em;color:var(--edge);overflow-wrap:anywhere}
+.citem .small{font-size:11.5px;line-height:1.3}
+.citem .x{position:absolute;top:2px;right:2px;width:30px;height:30px;display:grid;place-items:center;background:var(--surface);border:2px solid var(--edge);border-radius:50%;color:var(--edge);font:400 21px/1 var(--f-display);cursor:pointer;padding:0}
+.citem .x:hover{background:var(--bad-bg)}
+ol.flow{margin:0;padding-left:26px;display:flex;flex-direction:column;gap:10px}
+ol.flow li::marker{font:400 20px var(--f-display);color:var(--ok)}
+/* Coleção: binder 3×3 com capa personalizável */
+.stack{display:flex;flex-direction:column;gap:18px}
+.center{justify-content:center;text-align:center}
+.between{justify-content:space-between}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:var(--surface-2);border:var(--bw) solid var(--edge);border-radius:999px}
+.seg button{border:2px solid transparent;border-radius:999px;background:none;font:400 19px var(--f-display);letter-spacing:.03em;color:var(--muted);min-height:44px;cursor:pointer;transition:background-color .2s cubic-bezier(.16,1,.3,1)}
+.seg button[aria-selected="true"]{background:var(--accent);border-color:var(--edge);color:var(--accent-ink)}
+.cover{--cover:#d8453a;position:relative;width:min(100%,330px);aspect-ratio:5/6;margin:0 auto;border-radius:10px 16px 16px 10px;border:var(--bw) solid var(--edge);overflow:hidden;
+  background:radial-gradient(rgba(255,255,255,.14) 1.5px,transparent 1.5px) 0 0/10px 10px,var(--cover);
+  box-shadow:inset -8px -10px 0 rgba(0,0,0,.16),inset 0 3px 0 rgba(255,255,255,.18),var(--lift);touch-action:none;user-select:none;-webkit-user-select:none}
+.cover-spine{position:absolute;left:0;top:0;bottom:0;width:14%;background:rgba(0,0,0,.2);border-right:3px solid rgba(0,0,0,.28);display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.cover-spine i{width:14px;height:14px;border-radius:50%;background:#d9d4c4;border:3px solid var(--edge);box-sizing:border-box}
+.cover-plate{position:absolute;left:24%;right:8%;top:8%;background:var(--surface);border:var(--bw) solid var(--edge);border-radius:8px;padding:8px 10px;font:400 27px/1 var(--f-display);letter-spacing:.03em;color:var(--edge);text-align:center;overflow-wrap:anywhere;box-shadow:inset 0 -3px 0 var(--surface-2)}
+.sticker{position:absolute;width:20%;aspect-ratio:1;padding:0;margin:0;border:0;background:none;cursor:default;touch-action:none;
+  filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.sticker svg,.stk-palette svg{width:100%;height:100%;display:block}
+.cover.editing .sticker{cursor:grab}
+.cover.editing .sticker.sel{outline:3px dashed var(--surface);outline-offset:3px;border-radius:4px}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld > span{font:400 19px var(--f-display);letter-spacing:.03em;color:var(--edge)}
+.fld input{font:15px var(--f-body);padding:10px 14px;border-radius:999px;border:var(--bw) solid var(--edge);background:#fffdf0;color:var(--ink);min-height:46px;box-sizing:border-box}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.swatch{width:44px;height:44px;border-radius:50%;border:var(--bw) solid var(--edge);cursor:pointer;padding:0;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.swatch[aria-checked="true"]{outline:3px solid var(--scan);outline-offset:3px}
+.stk-palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px}
+.stk-palette button{aspect-ratio:1;background:var(--surface-2);border:2px solid var(--edge);border-radius:10px;padding:7px;cursor:pointer;box-shadow:inset 0 -3px 0 var(--surface-3)}
+.stk-palette button:active{transform:translateY(2px)}
+.stk-palette button[disabled]{opacity:.45}
+.pg-label{font:400 20px var(--f-display);letter-spacing:.03em;color:var(--edge)}
+.binder-page{position:relative;padding:12px 12px 12px 34px;background:var(--surface-2);border:var(--bw) solid var(--edge);border-radius:6px 12px 12px 6px;touch-action:pan-y}
+.binder-page::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:14px;
+  background:radial-gradient(circle,var(--edge) 0 5px,transparent 5.5px) 0 16%/14px 14px no-repeat,radial-gradient(circle,var(--edge) 0 5px,transparent 5.5px) 0 50%/14px 14px no-repeat,radial-gradient(circle,var(--edge) 0 5px,transparent 5.5px) 0 84%/14px 14px no-repeat}
+.pocket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pocket{position:relative;aspect-ratio:63/88;border-radius:6px;border:2px solid var(--line);background:var(--surface);padding:3px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  font:400 15px/1.05 var(--f-display);color:var(--edge);text-align:center;overflow:hidden;min-width:0;cursor:pointer}
+.pocket::after{content:"";position:absolute;inset:0;background:linear-gradient(155deg,rgba(255,255,255,.5),rgba(255,255,255,0) 38%);pointer-events:none}
+.pocket img{width:100%;height:100%;object-fit:cover;border-radius:4px;display:block}
+.pocket.empty{border-style:dashed;background:transparent;cursor:default}
+.pocket.empty::after{display:none}
+.pocket.sel{border-color:var(--edge);outline:3px solid var(--scan);outline-offset:2px}
+.pocket .nm{padding:4px;overflow-wrap:anywhere}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.btn.icon{width:52px;padding:0;flex:none}
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px}
+.dots button{width:24px;height:30px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.dots button::before{content:"";width:12px;height:12px;border:2px solid var(--edge);border-radius:3px;background:var(--surface);box-sizing:border-box}
+.dots button.has::before{background:var(--accent-2)}
+.dots button[aria-current="true"]::before{background:var(--edge);transform:scale(1.15)}
+.bd-detail{display:flex;flex-direction:column;gap:8px}
+.bd-detail:empty{display:none}
+.bd-detail .who{font:400 22px/1.1 var(--f-display);color:var(--edge)}
+.citem .ph{width:100%;aspect-ratio:96/134;border-radius:6px;background:var(--surface-3);display:grid;place-items:center}
+.spr{display:block;background-repeat:no-repeat;image-rendering:pixelated}
+.nosnap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.citem .bd{align-self:stretch;white-space:nowrap;font:400 15px var(--f-display);letter-spacing:.02em;border:2px solid var(--edge);border-radius:999px;padding:3px 10px;background:var(--surface);color:var(--ink);cursor:pointer;min-height:32px}
+.citem .bd.on{background:var(--accent);color:var(--accent-ink)}
+.citem .bd[disabled]{opacity:.5;cursor:default}
+@media (prefers-reduced-motion:no-preference){.pocket-grid.turn{animation:turn .32s cubic-bezier(.16,1,.3,1)}}
+@keyframes turn{from{opacity:.2;transform:translateX(var(--dx,0))}to{opacity:1;transform:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--edge);border-radius:6px;border:2px solid var(--surface-2)}
+::-webkit-scrollbar-track{background:var(--surface-2)}
+</style>
+
+<div class="sky" aria-hidden="true"></div>
+<div class="app">
+<header class="top">
+  <svg class="logo" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 0h10v1h-10zM2 1h1v1h-1zM13 1h1v1h-1zM2 2h1v1h-1zM4 2h8v1h-8zM13 2h1v1h-1zM2 3h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM2 6h1v1h-1zM4 6h8v1h-8zM13 6h1v1h-1zM2 7h1v1h-1zM13 7h1v1h-1zM2 8h1v1h-1zM4 8h6v1h-6zM13 8h1v1h-1zM2 9h1v1h-1zM13 9h1v1h-1zM2 10h1v1h-1zM4 10h4v1h-4zM13 10h1v1h-1zM2 11h1v1h-1zM13 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM2 13h1v1h-1zM4 13h7v1h-7zM13 13h1v1h-1zM3 14h10v1h-10z"/><rect x="0" y="7" width="16" height="2" fill="#2f8a46"/></svg>
+  <h1>PokeLook</h1>
+  <div class="sub">Pokémon TCG<br>visão computacional</div>
+</header>
+
+<main id="view-scan">
+  <section class="panel" aria-labelledby="h-cap">
+    <h2 id="h-cap">Escanear carta</h2>
+    <p class="muted small">Fotografe a carta inteira e em pé, sobre um fundo liso e de cor diferente da borda. Evite reflexos.</p>
+    <div class="capture">
+      <label class="btn primary pick"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 2h6v1h-6zM4 3h1v1h-1zM11 3h1v1h-1zM1 4h4v1h-4zM11 4h4v1h-4zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM6 6h4v1h-4zM15 6h1v1h-1zM0 7h1v1h-1zM5 7h1v1h-1zM10 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM4 8h1v1h-1zM11 8h1v1h-1zM15 8h1v1h-1zM0 9h1v1h-1zM4 9h1v1h-1zM11 9h1v1h-1zM15 9h1v1h-1zM0 10h1v1h-1zM4 10h1v1h-1zM11 10h1v1h-1zM15 10h1v1h-1zM0 11h1v1h-1zM5 11h1v1h-1zM10 11h1v1h-1zM15 11h1v1h-1zM0 12h1v1h-1zM6 12h4v1h-4zM15 12h1v1h-1zM0 13h1v1h-1zM15 13h1v1h-1zM1 14h14v1h-14z"/></svg>Tirar foto da carta<input id="in-camera" type="file" accept="image/*" capture="environment" aria-label="Tirar foto da carta"></label>
+      <label class="btn pick"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 1h14v1h-14zM0 2h1v1h-1zM15 2h1v1h-1zM0 3h1v1h-1zM11 3h2v1h-2zM15 3h1v1h-1zM0 4h1v1h-1zM10 4h4v1h-4zM15 4h1v1h-1zM0 5h1v1h-1zM11 5h2v1h-2zM15 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM6 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM5 8h3v1h-3zM15 8h1v1h-1zM0 9h1v1h-1zM4 9h5v1h-5zM11 9h1v1h-1zM15 9h1v1h-1zM0 10h1v1h-1zM3 10h10v1h-10zM15 10h1v1h-1zM0 11h1v1h-1zM2 11h12v1h-12zM15 11h1v1h-1zM0 12h1v1h-1zM15 12h1v1h-1zM1 13h14v1h-14z"/></svg>Galeria<input id="in-gallery" type="file" accept="image/*" aria-label="Escolher foto da galeria"></label>
+      <button class="btn" id="btn-sample" type="button"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 0h10v1h-10zM2 1h1v1h-1zM13 1h1v1h-1zM2 2h1v1h-1zM4 2h8v1h-8zM13 2h1v1h-1zM2 3h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM2 6h1v1h-1zM4 6h8v1h-8zM13 6h1v1h-1zM2 7h1v1h-1zM13 7h1v1h-1zM2 8h1v1h-1zM4 8h6v1h-6zM13 8h1v1h-1zM2 9h1v1h-1zM13 9h1v1h-1zM2 10h1v1h-1zM4 10h4v1h-4zM13 10h1v1h-1zM2 11h1v1h-1zM13 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM2 13h1v1h-1zM4 13h7v1h-7zM13 13h1v1h-1zM3 14h10v1h-10z"/></svg>Exemplo</button>
+    </div>
+    <p class="capmsg" id="capmsg" role="status">Também dá para colar uma imagem (Ctrl+V) ou arrastá-la para esta página.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="h-img">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="h-img">Imagem e contorno detectado</h2>
+      <button class="btn" id="btn-adjust" type="button" disabled>Ajustar cantos</button>
+    </div>
+    <div class="viewfinder"><canvas id="cv-main" width="800" height="600" aria-label="Foto com o contorno da carta"></canvas><span class="tag" id="vf-tag">AGUARDANDO IMAGEM</span></div>
+    <p class="handle-hint" id="adjust-hint" hidden>Arraste os 4 cantos até as pontas da carta e toque em “Aplicar”.</p>
+    <div class="row" id="adjust-actions" hidden><button class="btn primary" id="btn-apply" type="button">Aplicar</button><button class="btn" id="btn-cancel" type="button">Cancelar</button></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-pipe">
+    <h2 id="h-pipe">Pipeline de visão</h2>
+    <div class="stages" id="stages"></div>
+    <div class="status" id="status" role="status"></div>
+    <div class="ocr" id="ocr"></div>
+  </section>
+
+  <section class="panel" id="result" aria-labelledby="h-res" hidden></section>
+
+  <div class="notice" id="webview-warn" hidden>Parece que esta página está aberta dentro de um app (WebView). Alguns apps não deixam a página abrir a câmera ou a galeria. Se os botões não abrirem nada, abra este mesmo link no Chrome ou no Safari do celular.</div>
+  <section class="panel" aria-labelledby="h-man">
+    <h2 id="h-man">Buscar sem foto</h2>
+    <p class="muted small">Se a leitura falhar, digite o nome e/ou o número impresso no rodapé da carta.</p>
+    <form class="manual" id="form-manual">
+      <label class="sr" for="m-name">Nome</label><input id="m-name" placeholder="Nome (ex.: Pikachu)" autocomplete="off">
+      <label class="sr" for="m-num">Número</label><input id="m-num" placeholder="25/165 ou MEP 022" inputmode="numeric" autocomplete="off">
+      <button class="btn primary" type="submit">Buscar</button>
+    </form>
+  </section>
+  <details class="diag" id="diag-box"><summary>Diagnóstico técnico</summary>
+  <p class="small muted">Se algo não funcionar, toque em “Copiar diagnóstico” e cole na conversa com o Claude.</p>
+  <pre id="diag-log"></pre>
+  <button class="btn" type="button" id="btn-diag-copy">Copiar diagnóstico</button>
+</details>
+</main>
+
+
+
+<main id="view-coll" hidden>
+  <section class="panel">
+    <h2>Minha coleção</h2>
+    <p class="muted small">Fica salva só neste aparelho e navegador.</p>
+    <div class="seg" role="tablist" aria-label="Como ver a coleção">
+      <button type="button" role="tab" aria-selected="true" aria-controls="cv-binder" data-cv="binder">Binder</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="cv-all" data-cv="all">Todas as cartas</button>
+    </div>
+  </section>
+
+  <div id="cv-binder" class="stack">
+    <section class="panel" id="bd-cover-view" aria-label="Capa do binder">
+      <div class="cover" id="bd-cover"><div class="cover-spine" aria-hidden="true"><i></i><i></i><i></i></div><div class="cover-plate" id="bd-plate"></div><div id="bd-stickers"></div></div>
+      <p class="small muted center" id="bd-count"></p>
+      <div class="row center" id="bd-cover-actions"><button class="btn primary" type="button" id="bd-open">Abrir binder</button><button class="btn" type="button" id="bd-edit">Personalizar capa</button></div>
+    </section>
+
+    <section class="panel" id="bd-editor" hidden aria-labelledby="h-bd-ed">
+      <h2 id="h-bd-ed">Personalizar capa</h2>
+      <label class="fld"><span>Nome do binder</span><input id="bd-name" maxlength="30" autocomplete="off" placeholder="Meu binder"></label>
+      <div class="fld"><span id="lbl-cor">Cor da capa</span><div class="swatches" id="bd-colors" role="radiogroup" aria-labelledby="lbl-cor"></div></div>
+      <div class="fld"><span>Adesivos</span><p class="small muted" id="bd-st-hint">Toque num adesivo para colar na capa. Depois arraste para mudar de lugar.</p><div class="stk-palette" id="bd-palette"></div></div>
+      <div class="row"><button class="btn" type="button" id="bd-st-del" disabled>Tirar adesivo escolhido</button><button class="btn" type="button" id="bd-st-clear">Tirar todos</button></div>
+      <button class="btn primary" type="button" id="bd-done">Pronto</button>
+    </section>
+
+    <section class="panel" id="bd-pages" hidden aria-label="Páginas do binder">
+      <div class="row between"><button class="btn" type="button" id="bd-close">Fechar binder</button><span class="pg-label" id="bd-pglabel" aria-live="polite"></span></div>
+      <div class="binder-page" id="bd-page"><div class="pocket-grid" id="bd-grid"></div></div>
+      <div class="pager"><button class="btn icon" type="button" id="bd-prev" aria-label="Página anterior"></button><div class="dots" id="bd-dots"></div><button class="btn icon" type="button" id="bd-next" aria-label="Próxima página"></button></div>
+      <div class="bd-detail" id="bd-detail" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <div id="cv-all" class="stack" hidden>
+    <div class="coll-sum" id="coll-sum"></div>
+    <div class="coll-list" id="coll-list"></div>
+  </div>
+</main>
+
+<main id="view-about" hidden>
+  <section class="panel">
+    <h2>Como o protótipo funciona</h2>
+    <ol class="flow">
+      <li><b>Aquisição.</b> Foto pela câmera ou galeria, reduzida para no máximo 2400 px no maior lado.</li>
+      <li><b>Pré-processamento.</b> Tons de cinza, alongamento de contraste (percentis 2–98%) e filtro gaussiano 5×5.</li>
+      <li><b>Bordas.</b> Gradiente de Sobel, limiar de Otsu e dilatação 3×3.</li>
+      <li><b>Segmentação.</b> Transformada de Hough acha as retas mais fortes; dois pares quase paralelos e perpendiculares, com proporção de carta e bem apoiados nas bordas, dão os 4 cantos. Se falhar, usa o preenchimento do fundo e o maior componente conectado.</li>
+      <li><b>Correção de perspectiva.</b> Homografia (8 parâmetros) leva os 4 cantos para um retângulo 63×88 mm, com interpolação bilinear.</li>
+      <li><b>Regiões de interesse.</b> Faixa do nome, PS no canto superior direito e rodapé, ampliados 3×; o nome é lido em duas versões (realçada e binarizada por Otsu) e fica a melhor. Cor predominante do corpo da carta.</li>
+      <li><b>OCR.</b> Tesseract (LSTM) lê o nome, o PS e o rodapé (“MEW EN 025/165”, “MEP EN 022”).</li>
+      <li><b>Identificação.</b> Nome comparado por distância de Levenshtein com 20.955 cartas; número, código ou total da coleção e PS confirmam a versão exata.</li>
+      <li><b>Consulta.</b> Dados da carta, da coleção e da Pokédex vêm de bases abertas embutidas no app.</li>
+    </ol>
+  </section>
+  <section class="panel">
+    <h2>Fontes de dados</h2>
+    <dl class="kv small">
+      <dt>Cartas</dt><dd>pokemon-tcg-data (PokemonTCG, GitHub) mais promos MEP e SVP do TCGdex, 178 coleções até <span id="last-set">—</span></dd>
+      <dt>Pokédex</dt><dd>PokeAPI (CSV oficial do projeto). Não há textos em português; a descrição aparece em espanhol.</dd>
+      <dt>Imagens</dt><dd>Sprites do PokeAPI/sprites</dd>
+      <dt>OCR</dt><dd>Tesseract.js 5.1.1, modelo “eng”</dd>
+      <dt>Preços</dt><dd>A Liga Pokémon não oferece API pública. O app abre a busca da carta no site da Liga, e o painel de valores mostra números fictícios só para ilustrar o layout.</dd>
+    </dl>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-view="scan"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h3v1h-3zM13 0h3v1h-3zM0 1h1v1h-1zM15 1h1v1h-1zM0 2h1v1h-1zM15 2h1v1h-1zM0 7h16v1h-16zM0 12h1v1h-1zM15 12h1v1h-1zM0 13h1v1h-1zM15 13h1v1h-1zM0 14h3v1h-3zM13 14h3v1h-3z"/></svg>Escanear</button>
+  <button role="tab" aria-selected="false" data-view="coll"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 2h16v1h-16zM0 3h1v1h-1zM15 3h1v1h-1zM0 4h1v1h-1zM2 4h5v1h-5zM9 4h5v1h-5zM15 4h1v1h-1zM0 5h1v1h-1zM2 5h5v1h-5zM9 5h5v1h-5zM15 5h1v1h-1zM0 6h1v1h-1zM2 6h5v1h-5zM9 6h5v1h-5zM15 6h1v1h-1zM0 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h5v1h-5zM15 8h1v1h-1zM0 9h1v1h-1zM2 9h5v1h-5zM9 9h5v1h-5zM15 9h1v1h-1zM0 10h1v1h-1zM2 10h5v1h-5zM9 10h5v1h-5zM15 10h1v1h-1zM0 11h1v1h-1zM15 11h1v1h-1zM0 12h16v1h-16z"/></svg>Coleção</button>
+  <button role="tab" aria-selected="false" data-view="about"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 0h6v1h-6zM3 1h2v1h-2zM11 1h2v1h-2zM2 2h1v1h-1zM13 2h1v1h-1zM1 3h1v1h-1zM7 3h2v1h-2zM14 3h1v1h-1zM1 4h1v1h-1zM7 4h2v1h-2zM14 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM0 6h1v1h-1zM7 6h2v1h-2zM15 6h1v1h-1zM0 7h1v1h-1zM7 7h2v1h-2zM15 7h1v1h-1zM0 8h1v1h-1zM7 8h2v1h-2zM15 8h1v1h-1zM0 9h1v1h-1zM7 9h2v1h-2zM15 9h1v1h-1zM1 10h1v1h-1zM7 10h2v1h-2zM14 10h1v1h-1zM1 11h1v1h-1zM14 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM3 13h2v1h-2zM11 13h2v1h-2zM5 14h6v1h-6z"/></svg>Como funciona</button>
+</nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+"use strict";
+/* ======================= Diagnóstico ======================= */
+const DIAG = [], T0 = performance.now();
+function diag(ev, detail = '') { const line = `${((performance.now() - T0) / 1000).toFixed(1).padStart(6)}s  ${ev}${detail ? ' · ' + detail : ''}`; DIAG.push(line); if (DIAG.length > 200) DIAG.shift(); const pre = document.getElementById('diag-log'); if (pre) pre.textContent = envText() + '\n\n' + DIAG.join('\n'); }
+const IS_WEBVIEW = /; wv\)/.test(navigator.userAgent) || (/(iPhone|iPad)/.test(navigator.userAgent) && !/Safari\//.test(navigator.userAgent));
+function envText() { let framed = '?'; try { framed = window.top !== window ? 'sim' : 'não'; } catch { framed = 'sim (outro domínio)'; } return [`navegador: ${navigator.userAgent}`, `tela: ${innerWidth}×${innerHeight} @${devicePixelRatio}x · dentro de iframe: ${framed} · webview: ${IS_WEBVIEW ? 'sim' : 'não'}`, `WebAssembly: ${typeof WebAssembly === 'object' ? 'sim' : 'não'} · createImageBitmap: ${'createImageBitmap' in window ? 'sim' : 'não'} · Tesseract: ${window.Tesseract ? 'carregado' : 'não carregado'}`].join('\n'); }
+window.addEventListener('error', e => diag('ERRO', `${e.message} (${(e.filename || '').split('/').pop()}:${e.lineno})`));
+window.addEventListener('unhandledrejection', e => diag('ERRO (promise)', String(e.reason && (e.reason.message || e.reason))));
+/* ======================= Utilidades ======================= */
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else if (k === 'style') e.style.cssText = v; else e.setAttribute(k, v); } for (const k of kids) if (k != null) e.append(k); return e; };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const frame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } } };
+const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+function lev(a, b) { const m = a.length, n = b.length; if (!m) return n; if (!n) return m; let p = new Array(n + 1), c = new Array(n + 1); for (let j = 0; j <= n; j++) p[j] = j; for (let i = 1; i <= m; i++) { c[0] = i; for (let j = 1; j <= n; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); [p, c] = [c, p]; } return p[n]; }
+// Similaridade do nome da carta com o texto lido: melhor janela do texto com o tamanho do nome.
+function nameSim(name, text) {
+  if (!name || !text) return 0;
+  let best = 1 - lev(name, text) / Math.max(name.length, text.length);
+  const L = name.length;
+  for (let w = Math.max(3, L - 1); w <= L + 1; w++) for (let i = 0; i + w <= text.length; i++) {
+    const s = 1 - lev(name, text.slice(i, i + w)) / Math.max(L, w); if (s > best) best = s;
+  }
+  return best;
+}
+
+/* ======================= Dados ======================= */
+const TYPE_PT = { Grass: 'Planta', Fire: 'Fogo', Water: 'Água', Lightning: 'Elétrico', Psychic: 'Psíquico', Fighting: 'Lutador', Darkness: 'Escuridão', Metal: 'Metal', Fairy: 'Fada', Dragon: 'Dragão', Colorless: 'Incolor' };
+const TYPE_COLOR = { Grass: '#3f9b4a', Fire: '#d9472b', Water: '#2f7fd0', Lightning: '#d9a400', Psychic: '#9b4fb8', Fighting: '#b0642c', Darkness: '#2f3a44', Metal: '#7d8a96', Fairy: '#d65c9c', Dragon: '#a0862a', Colorless: '#9aa1a8' };
+const DEX_TYPE_PT = { normal: 'Normal', fire: 'Fogo', water: 'Água', grass: 'Planta', electric: 'Elétrico', ice: 'Gelo', fighting: 'Lutador', poison: 'Venenoso', ground: 'Terrestre', flying: 'Voador', psychic: 'Psíquico', bug: 'Inseto', rock: 'Pedra', ghost: 'Fantasma', dragon: 'Dragão', dark: 'Sombrio', steel: 'Aço', fairy: 'Fada' };
+const DEX_TYPE_COLOR = { normal: '#9a9a78', fire: '#e0672b', water: '#4f86e0', grass: '#5fae3e', electric: '#d9b000', ice: '#5fbcbc', fighting: '#b5352b', poison: '#9440a0', ground: '#c9a24f', flying: '#8a7ad8', psychic: '#e5507a', bug: '#93a51d', rock: '#a89238', ghost: '#6a559a', dragon: '#6a3de8', dark: '#6a5446', steel: '#8f8fb0', fairy: '#d97fa0' };
+const RARITY_PT = { 'Common': 'Comum', 'Uncommon': 'Incomum', 'Rare': 'Rara', 'Rare Holo': 'Rara Holo', 'Double Rare': 'Rara Dupla', 'Ultra Rare': 'Ultra Rara', 'Illustration Rare': 'Rara Ilustrada', 'Special Illustration Rare': 'Rara Ilustrada Especial', 'Hyper Rare': 'Hiper Rara', 'Promo': 'Promo', 'Rare Holo EX': 'Rara Holo EX', 'Rare Holo GX': 'Rara Holo GX', 'Rare Holo V': 'Rara Holo V', 'Rare Holo VMAX': 'Rara Holo VMAX', 'Rare Secret': 'Rara Secreta', 'Rare Rainbow': 'Rara Arco-íris', 'Rare Ultra': 'Rara Ultra', 'ACE SPEC Rare': 'Rara ACE SPEC', 'Shiny Rare': 'Rara Brilhante', 'Shiny Ultra Rare': 'Ultra Rara Brilhante', 'Mega Hyper Rare': 'Mega Hiper Rara' };
+const SUPER_PT = { P: 'Pokémon', T: 'Treinador', E: 'Energia' };
+const SUBTYPE_PT = { Basic: 'Básico', 'Stage 1': 'Estágio 1', 'Stage 2': 'Estágio 2', Item: 'Item', Supporter: 'Apoiador', Stadium: 'Estádio', 'Pokémon Tool': 'Ferramenta Pokémon' };
+const STAT_PT = ['PS', 'Ataque', 'Defesa', 'At. Esp.', 'Def. Esp.', 'Velocidade'];
+
+const DB = { ready: null, sets: [], cards: [], byNumber: new Map(), names: [], dex: null, setCache: new Map() };
+DB.ready = (async () => {
+  const [cat, dex] = await Promise.all([fetch('data/catalogo.json').then(r => r.json()), fetch('data/pokedex.json').then(r => r.json())]);
+  DB.sets = cat.sets; DB.cards = cat.cards; DB.dex = dex;
+  const names = new Map();
+  DB.cards.forEach((c, i) => {
+    const k = String(parseInt(c[2], 10)) === 'NaN' ? c[2].toUpperCase() : String(parseInt(c[2], 10));
+    if (!DB.byNumber.has(k)) DB.byNumber.set(k, []); DB.byNumber.get(k).push(i);
+    const n = norm(c[1]); if (!names.has(n)) names.set(n, []); names.get(n).push(i);
+  });
+  DB.names = [...names.entries()];
+  const last = DB.sets[DB.sets.length - 1]; $('#last-set').textContent = `${last[1]} (${last[5].replaceAll('/', '-')})`;
+})();
+const cardObj = i => { const c = DB.cards[i], s = DB.sets[c[3]]; return { i, id: c[0], name: c[1], number: c[2], set: { id: s[0], name: s[1], series: s[2], printed: s[3], total: s[4], date: s[5], code: s[6] }, sup: c[4], type: c[5], hp: c[6], rarity: c[7], dex: c[8] }; };
+// Promos não têm "/total": imprime-se o código e o número (ex.: MEP 022).
+const numLabel = (number, st) => /Promos/.test(st.name) || !st.printed ? `${(st.code || '').replace(/^PR-/, '')} ${String(number).padStart(3, '0')}`.trim() : `${number}/${st.printed}`;
+async function setDetails(id) { if (!DB.setCache.has(id)) DB.setCache.set(id, fetch(`data/sets/${id}.json`).then(r => r.json())); return DB.setCache.get(id); }
+
+/* ======================= Visão: primitivas ======================= */
+function toGray(img) { const { data, width: w, height: h } = img, g = new Float32Array(w * h); for (let i = 0, j = 0; j < g.length; i += 4, j++) g[j] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]; return { g, w, h }; }
+function stretch({ g, w, h }) { const hist = new Uint32Array(256); for (const v of g) hist[v | 0]++; const n = g.length; let acc = 0, lo = 0, hi = 255; for (let i = 0; i < 256; i++) { acc += hist[i]; if (acc > n * 0.02) { lo = i; break; } } acc = 0; for (let i = 255; i >= 0; i--) { acc += hist[i]; if (acc > n * 0.02) { hi = i; break; } } const s = 255 / Math.max(1, hi - lo), o = new Float32Array(n); for (let i = 0; i < n; i++) o[i] = Math.min(255, Math.max(0, (g[i] - lo) * s)); return { g: o, w, h }; }
+function gauss({ g, w, h }) { const k = [1, 4, 6, 4, 1].map(v => v / 16), t = new Float32Array(g.length), o = new Float32Array(g.length); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let d = -2; d <= 2; d++) { const xx = Math.min(w - 1, Math.max(0, x + d)); s += g[y * w + xx] * k[d + 2]; } t[y * w + x] = s; } for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let d = -2; d <= 2; d++) { const yy = Math.min(h - 1, Math.max(0, y + d)); s += t[yy * w + x] * k[d + 2]; } o[y * w + x] = s; } return { g: o, w, h }; }
+function sobel({ g, w, h }) { const m = new Float32Array(w * h), ang = new Float32Array(w * h); let mx = 0; for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; const gx = -g[i - w - 1] - 2 * g[i - 1] - g[i + w - 1] + g[i - w + 1] + 2 * g[i + 1] + g[i + w + 1]; const gy = -g[i - w - 1] - 2 * g[i - w] - g[i - w + 1] + g[i + w - 1] + 2 * g[i + w] + g[i + w + 1]; const v = Math.hypot(gx, gy); m[i] = v; ang[i] = Math.atan2(gy, gx); if (v > mx) mx = v; } for (let i = 0; i < m.length; i++) m[i] = m[i] / (mx || 1) * 255; return { g: m, w, h, ang }; }
+function otsu(vals) { const hist = new Float64Array(256); for (const v of vals) hist[Math.min(255, v | 0)]++; const n = vals.length; let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i]; let sb = 0, wb = 0, best = 0, th = 0; for (let t = 0; t < 256; t++) { wb += hist[t]; if (!wb) continue; const wf = n - wb; if (!wf) break; sb += t * hist[t]; const mb = sb / wb, mf = (sum - sb) / wf, v = wb * wf * (mb - mf) ** 2; if (v > best) { best = v; th = t; } } return th; }
+function dilate(b, w, h) { const o = new Uint8Array(b.length); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let on = 0; for (let dy = -1; dy <= 1 && !on; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < h && b[yy * w + xx]) { on = 1; break; } } o[y * w + x] = on; } return o; }
+// Fundo = pixels sem borda alcançáveis a partir da moldura da imagem. O que sobra é objeto.
+function segment(edges, w, h) {
+  const bg = new Uint8Array(w * h), q = new Int32Array(w * h); let qh = 0, qt = 0;
+  const push = i => { if (!bg[i] && !edges[i]) { bg[i] = 1; q[qt++] = i; } };
+  for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); } for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+  while (qh < qt) { const i = q[qh++], x = i % w, y = (i / w) | 0; if (x > 0) push(i - 1); if (x < w - 1) push(i + 1); if (y > 0) push(i - w); if (y < h - 1) push(i + w); }
+  // maior componente conectado do objeto
+  const lab = new Int32Array(w * h); let best = 0, bestN = 0, L = 0;
+  for (let s = 0; s < w * h; s++) { if (bg[s] || lab[s]) continue; L++; let n = 0; qh = qt = 0; q[qt++] = s; lab[s] = L; while (qh < qt) { const i = q[qh++]; n++; const x = i % w, y = (i / w) | 0; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && !bg[j] && !lab[j]) { lab[j] = L; q[qt++] = j; } } if (n > bestN) { bestN = n; best = L; } }
+  const mask = new Uint8Array(w * h); for (let i = 0; i < mask.length; i++) mask[i] = lab[i] === best ? 1 : 0;
+  return { mask, area: bestN };
+}
+function hull(pts) { pts = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]); const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); const lo = [], up = []; for (const p of pts) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); } for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); } up.pop(); lo.pop(); return lo.concat(up); }
+const polyArea = P => { let a = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; a += p[0] * q[1] - q[0] * p[1]; } return Math.abs(a) / 2; };
+// Quadrilátero de maior área com vértices no fecho convexo.
+function maxQuad(H) {
+  let P = H; if (P.length > 40) { const step = P.length / 40; P = Array.from({ length: 40 }, (_, k) => H[Math.floor(k * step)]); }
+  const n = P.length; if (n < 4) return null; let best = 0, Q = null;
+  for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) for (let c = b + 1; c < n; c++) for (let d = c + 1; d < n; d++) { const A = polyArea([P[a], P[b], P[c], P[d]]); if (A > best) { best = A; Q = [P[a], P[b], P[c], P[d]]; } }
+  return Q;
+}
+// Transformada de Hough: acha retas fortes; 2 pares quase paralelos e quase perpendiculares formam a carta.
+function houghQuad(edge, sup, w, h, ang) {
+  const NT = 180, diag = Math.ceil(Math.hypot(w, h)), NR = 2 * diag + 1, acc = new Uint32Array(NT * NR);
+  const cs = new Float32Array(NT), sn = new Float32Array(NT); for (let t = 0; t < NT; t++) { cs[t] = Math.cos(t * Math.PI / NT); sn[t] = Math.sin(t * Math.PI / NT); }
+  // cada pixel de borda só vota nas retas perpendiculares ao seu gradiente (±8°): menos ruído da ilustração
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (!edge[i]) continue; let t0 = Math.round(ang[i] * 180 / Math.PI); t0 = ((t0 % 180) + 180) % 180;
+    for (let dt = -8; dt <= 8; dt++) { const t = (t0 + dt + NT) % NT; acc[t * NR + Math.round(x * cs[t] + y * sn[t]) + diag]++; } }
+  { // suaviza o acumulador (3×3) para juntar votos de bordas levemente inclinadas
+    const sm = new Uint32Array(acc.length); for (let t = 0; t < NT; t++) for (let r = 1; r < NR - 1; r++) { let v = 0; for (let dt = -1; dt <= 1; dt++) { const tt = (t + dt + NT) % NT; if (t + dt < 0 || t + dt >= NT) continue; v += acc[tt * NR + r - 1] + acc[tt * NR + r] + acc[tt * NR + r + 1]; } sm[t * NR + r] = v; }
+    var raw = acc.slice(); acc.set(sm); }
+  const minV = Math.min(w, h) * 0.12 * 3, peaks = [];
+  for (let k = 0; k < 70; k++) {
+    let best = 0, bi = -1; for (let i = 0; i < acc.length; i++) if (acc[i] > best) { best = acc[i]; bi = i; }
+    if (best < minV) break;
+    let t = Math.floor(bi / NR), r = bi % NR - diag;
+    { // refina no acumulador bruto (sem suavização) para pegar a inclinação exata
+      let bv = -1, bt = t, br = r; for (let dt = -3; dt <= 3; dt++) { const tt = t + dt; if (tt < 0 || tt >= NT) continue; for (let dr = -4; dr <= 4; dr++) { const rr = r + dr + diag; if (rr < 0 || rr >= NR) continue; const v = raw[tt * NR + rr]; if (v > bv) { bv = v; bt = tt; br = r + dr; } } }
+      peaks.push({ t: bt, r: br, v: best }); }
+    for (let dt = -5; dt <= 5; dt++) { const tt = (t + dt + NT) % NT, flip = (t + dt < 0 || t + dt >= NT) ? -1 : 1; for (let dr = -12; dr <= 12; dr++) { const rr = flip * r + dr + diag; if (rr >= 0 && rr < NR) acc[tt * NR + rr] = 0; } }
+  }
+  const angDiff = (a, b) => { const d = Math.abs(a - b) % 180; return Math.min(d, 180 - d); };
+  const inter = (A, B) => { const a1 = cs[A.t], b1 = sn[A.t], a2 = cs[B.t], b2 = sn[B.t], det = a1 * b2 - a2 * b1; if (Math.abs(det) < 1e-6) return null; return [(A.r * b2 - B.r * b1) / det, (a1 * B.r - a2 * A.r) / det]; };
+  const pairs = []; for (let i = 0; i < peaks.length; i++) for (let j = i + 1; j < peaks.length; j++) { const A = peaks[i], B = peaks[j]; if (angDiff(A.t, B.t) > 12) continue; const rb = (A.t - B.t > 90 || B.t - A.t > 90) ? -B.r : B.r; if (Math.abs(A.r - rb) < Math.min(w, h) * 0.15) continue; pairs.push([A, B]); }
+  const supAt = (x, y) => { x = Math.round(x); y = Math.round(y); return x >= 0 && y >= 0 && x < w && y < h && sup[y * w + x]; };
+  let best = null;
+  for (let i = 0; i < pairs.length; i++) for (let j = i + 1; j < pairs.length; j++) {
+    const [A1, A2] = pairs[i], [B1, B2] = pairs[j]; const ad = angDiff(A1.t, B1.t); if (ad < 60) continue;
+    const P = [inter(A1, B1), inter(A1, B2), inter(A2, B2), inter(A2, B1)]; if (P.some(p => !p || p[0] < -w * .03 || p[1] < -h * .03 || p[0] > w * 1.03 || p[1] > h * 1.03)) continue;
+    const Q = orderCorners(P), area = polyArea(Q) / (w * h); if (area < 0.08) continue;
+    const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]); const ratio = (d(Q[0], Q[1]) + d(Q[2], Q[3])) / (d(Q[1], Q[2]) + d(Q[3], Q[0])); if (ratio < 0.55 || ratio > 0.9) continue;
+    let tot = 0, minS = 1; for (let k = 0; k < 4; k++) { const a = Q[k], b = Q[(k + 1) % 4]; let n = 0; for (let u = 0.04; u <= 0.96; u += 0.02) if (supAt(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u)) n++; const f = n / 47; tot += f; minS = Math.min(minS, f); }
+    if (minS < 0.35) continue;
+    const score = (tot / 4) ** 2 * area * (1 - Math.abs(ratio - 63 / 88));
+    if (!best || score > best.score) best = { Q, score, support: tot / 4 };
+  }
+  return { quad: best, lines: peaks };
+}
+// Ordena cantos: sup-esq, sup-dir, inf-dir, inf-esq, garantindo retrato (lado longo vertical).
+function orderCorners(Q) {
+  const cx = Q.reduce((s, p) => s + p[0], 0) / 4, cy = Q.reduce((s, p) => s + p[1], 0) / 4;
+  let P = Q.slice().sort((a, b) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx)); // horário em coords de tela
+  let k = 0, m = Infinity; P.forEach((p, i) => { const s = p[0] + p[1]; if (s < m) { m = s; k = i; } }); P = P.slice(k).concat(P.slice(0, k));
+  const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  if (d(P[0], P[1]) + d(P[2], P[3]) > d(P[1], P[2]) + d(P[3], P[0])) P = [P[3], P[0], P[1], P[2]]; // paisagem → gira
+  return P;
+}
+function solve(A, b) { const n = b.length; A = A.map((r, i) => [...r, b[i]]); for (let c = 0; c < n; c++) { let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r; [A[c], A[p]] = [A[p], A[c]]; for (let r = 0; r < n; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let k = c; k <= n; k++) A[r][k] -= f * A[c][k]; } } return A.map((r, i) => r[n] / r[i]); }
+// Homografia que leva pontos src → dst.
+function homography(src, dst) { const A = [], b = []; for (let i = 0; i < 4; i++) { const [x, y] = src[i], [u, v] = dst[i]; A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u); A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v); } const h = solve(A, b); return [...h, 1]; }
+const applyH = (H, x, y) => { const z = H[6] * x + H[7] * y + H[8]; return [(H[0] * x + H[1] * y + H[2]) / z, (H[3] * x + H[4] * y + H[5]) / z]; };
+// Recorta a região (u0..u1, v0..v1 em fração da carta) da foto original já com perspectiva corrigida.
+function warp(srcImg, corners, W, Hh, r = [0, 0, 1, 1]) {
+  const H = homography([[0, 0], [1, 0], [1, 1], [0, 1]], corners);
+  const ow = Math.round(W * (r[2] - r[0])), oh = Math.round(Hh * (r[3] - r[1]));
+  const out = new ImageData(ow, oh), s = srcImg.data, sw = srcImg.width, sh = srcImg.height, o = out.data;
+  for (let y = 0; y < oh; y++) for (let x = 0; x < ow; x++) {
+    const [sx, sy] = applyH(H, r[0] + (x + .5) / W, r[1] + (y + .5) / Hh);
+    const x0 = Math.floor(sx), y0 = Math.floor(sy), fx = sx - x0, fy = sy - y0, k = (y * ow + x) * 4;
+    if (x0 < 0 || y0 < 0 || x0 >= sw - 1 || y0 >= sh - 1) { o[k] = o[k + 1] = o[k + 2] = 255; o[k + 3] = 255; continue; }
+    const i = (y0 * sw + x0) * 4;
+    for (let c = 0; c < 3; c++) o[k + c] = (s[i + c] * (1 - fx) + s[i + 4 + c] * fx) * (1 - fy) + (s[i + sw * 4 + c] * (1 - fx) + s[i + sw * 4 + 4 + c] * fx) * fy;
+    o[k + 3] = 255;
+  }
+  return out;
+}
+// Binarização para OCR: texto escuro sobre fundo claro.
+function binarize(img) { const { g } = toGray(img); const t = otsu(g); let dark = 0; for (const v of g) if (v < t) dark++; const invert = dark > g.length / 2; const o = new ImageData(img.width, img.height); for (let i = 0; i < g.length; i++) { let on = g[i] < t; if (invert) on = !on; const v = on ? 0 : 255; o.data[i * 4] = o.data[i * 4 + 1] = o.data[i * 4 + 2] = v; o.data[i * 4 + 3] = 255; } return o; }
+// Limiar adaptativo de Bradley (média local via imagem integral): lida com fundo holográfico irregular.
+function adaptive(img, win, k = 0.12) {
+  const { g, w, h } = toGray(img), I = new Float64Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) { let row = 0; for (let x = 0; x < w; x++) { row += g[y * w + x]; I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + row; } }
+  const o = new ImageData(w, h), r = win >> 1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const x0 = Math.max(0, x - r), y0 = Math.max(0, y - r), x1 = Math.min(w, x + r + 1), y1 = Math.min(h, y + r + 1); const sum = I[y1 * (w + 1) + x1] - I[y0 * (w + 1) + x1] - I[y1 * (w + 1) + x0] + I[y0 * (w + 1) + x0]; const v = g[y * w + x] * (x1 - x0) * (y1 - y0) < sum * (1 - k) ? 0 : 255; const i = (y * w + x) * 4; o.data[i] = o.data[i + 1] = o.data[i + 2] = v; o.data[i + 3] = 255; }
+  return o;
+}
+function rgbToHsv(r, g, b) { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let h = 0; if (d) { if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4; h *= 60; if (h < 0) h += 360; } return [h, mx ? d / mx : 0, mx]; }
+// Cor predominante do corpo da carta (metade de baixo, sem a moldura) → tipo de energia provável.
+function dominantType(img) {
+  const bins = new Float64Array(12); let sat = 0, n = 0, rs = 0, gs = 0, bs = 0;
+  const { data, width: w, height: h } = img;
+  for (let y = Math.floor(h * .5); y < h * .88; y += 2) for (let x = Math.floor(w * .08); x < w * .92; x += 2) { const i = (y * w + x) * 4; const [hh, s, v] = rgbToHsv(data[i], data[i + 1], data[i + 2]); rs += data[i]; gs += data[i + 1]; bs += data[i + 2]; n++; if (s > .25 && v > .25) { bins[Math.floor(hh / 30) % 12] += s; sat++; } }
+  const rgb = [rs / n, gs / n, bs / n].map(Math.round);
+  if (sat < n * .15) { const [, , v] = rgbToHsv(...rgb); return { rgb, type: v < .35 ? 'Darkness' : 'Colorless' }; }
+  let k = 0; bins.forEach((v, i) => { if (v > bins[k]) k = i; });
+  const hue = k * 30 + 15; const type = hue < 20 || hue >= 340 ? 'Fire' : hue < 45 ? 'Fighting' : hue < 70 ? 'Lightning' : hue < 165 ? 'Grass' : hue < 250 ? 'Water' : hue < 300 ? 'Psychic' : 'Fairy';
+  return { rgb, type };
+}
+
+/* ======================= Desenho dos estágios ======================= */
+const STAGES = [
+  ['01', 'Aquisição'], ['02', 'Cinza + contraste + gaussiano'], ['03', 'Bordas (Sobel + Otsu)'], ['04', 'Segmentação'], ['05', 'Perspectiva corrigida'], ['06', 'Regiões de interesse'], ['07', 'Identificação']
+];
+const stageEls = STAGES.map(([n, t]) => { const c = el('canvas', { width: 264, height: 264 }); const ms = el('div', { class: 'ms', text: '—' }); const d = el('div', { class: 'stage pending' }, c, el('div', { class: 'n', text: n }), el('div', { class: 't', text: t }), ms); $('#stages').append(d); return { d, c, ms }; });
+function resetStages() { stageEls.forEach(s => { s.d.classList.add('pending'); s.ms.textContent = '—'; s.c.getContext('2d').clearRect(0, 0, 264, 264); }); }
+function showStage(i, src, ms, label) { const s = stageEls[i], ctx = s.c.getContext('2d'); ctx.clearRect(0, 0, 264, 264); const sw = src.width, sh = src.height, k = Math.min(264 / sw, 264 / sh); ctx.imageSmoothingEnabled = true; ctx.drawImage(src, (264 - sw * k) / 2, (264 - sh * k) / 2, sw * k, sh * k); s.d.classList.remove('pending'); s.ms.textContent = label || `${ms.toFixed(0)} ms`; }
+const canvasFrom = img => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').putImageData(img, 0, 0); return c; };
+const grayCanvas = ({ g, w, h }, f = v => v) => { const o = new ImageData(w, h); for (let i = 0; i < g.length; i++) { const v = f(g[i], i); o.data[i * 4] = o.data[i * 4 + 1] = o.data[i * 4 + 2] = v; o.data[i * 4 + 3] = 255; } return canvasFrom(o); };
+const status = (txt, busy) => { const s = $('#status'); s.replaceChildren(); if (busy) s.append(el('span', { class: 'spin' })); s.append(el('span', { text: txt })); };
+
+/* ======================= Visor com cantos ajustáveis ======================= */
+const VF = { canvas: $('#cv-main'), src: null, corners: null, scale: 1, editing: false, drag: -1, backup: null };
+function drawVF() {
+  const c = VF.canvas, ctx = c.getContext('2d');
+  if (!VF.src) return;
+  const w = VF.src.width, h = VF.src.height, k = Math.min(1600 / w, 1600 / h, 1);
+  c.width = Math.round(w * k); c.height = Math.round(h * k); VF.scale = k;
+  ctx.drawImage(VF.src, 0, 0, c.width, c.height);
+  if (VF.corners) {
+    const P = VF.corners.map(([x, y]) => [x * k, y * k]);
+    ctx.fillStyle = 'rgba(11,17,23,.45)'; ctx.beginPath(); ctx.rect(0, 0, c.width, c.height); ctx.moveTo(...P[0]); for (const p of P.slice(1).reverse()) ctx.lineTo(...p); ctx.closePath(); ctx.fill('evenodd');
+    ctx.strokeStyle = '#5be08f'; ctx.lineWidth = Math.max(3, c.width / 260); ctx.beginPath(); ctx.moveTo(...P[0]); for (const p of P.slice(1)) ctx.lineTo(...p); ctx.closePath(); ctx.stroke();
+    const r = Math.max(10, c.width / 55);
+    P.forEach((p, i) => { ctx.beginPath(); ctx.arc(p[0], p[1], VF.editing ? r * 1.6 : r * .7, 0, 7); ctx.fillStyle = i === 0 ? '#ffd23f' : '#5be08f'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke(); });
+  }
+}
+function vfPoint(e) { const r = VF.canvas.getBoundingClientRect(), c = VF.canvas; const k = Math.min(r.width / c.width, r.height / c.height); const ox = (r.width - c.width * k) / 2, oy = (r.height - c.height * k) / 2; return [((e.clientX - r.left - ox) / k) / VF.scale, ((e.clientY - r.top - oy) / k) / VF.scale]; }
+VF.canvas.addEventListener('pointerdown', e => { if (!VF.editing) return; const p = vfPoint(e); let bi = -1, bd = Infinity; VF.corners.forEach((q, i) => { const d = Math.hypot(q[0] - p[0], q[1] - p[1]); if (d < bd) { bd = d; bi = i; } }); VF.drag = bi; VF.canvas.setPointerCapture(e.pointerId); });
+VF.canvas.addEventListener('pointermove', e => { if (VF.drag < 0) return; const p = vfPoint(e); VF.corners[VF.drag] = [Math.max(0, Math.min(VF.src.width, p[0])), Math.max(0, Math.min(VF.src.height, p[1]))]; drawVF(); });
+VF.canvas.addEventListener('pointerup', () => { VF.drag = -1; });
+function setEditing(on) { VF.editing = on; $('#adjust-hint').hidden = !on; $('#adjust-actions').hidden = !on; $('#btn-adjust').hidden = on; drawVF(); }
+$('#btn-adjust').onclick = () => { VF.backup = VF.corners.map(p => p.slice()); setEditing(true); };
+$('#btn-cancel').onclick = () => { VF.corners = VF.backup; setEditing(false); };
+$('#btn-apply').onclick = () => { setEditing(false); VF.corners = orderCorners(VF.corners); runFromCorners(true); };
+
+/* ======================= OCR ======================= */
+let ocrWorker = null, ocrFailed = false;
+async function getOCR() {
+  if (ocrWorker || ocrFailed) return ocrWorker;
+  if (!window.Tesseract) { diag('OCR: biblioteca Tesseract não carregou (script bloqueado?)'); ocrFailed = true; return null; }
+  try {
+    status('Carregando o leitor de texto (OCR)… na primeira vez baixa ~7 MB', true); diag('OCR: carregando');
+    // O modelo de idioma é publicado como .wasm (tipo de arquivo aceito pela hospedagem);
+    // este pequeno worker redireciona o download do Tesseract para esse nome.
+    const shim = `const _f=self.fetch.bind(self);self.fetch=(u,o)=>_f(String(u).replace(/eng\\.traineddata\\.gz$/,'eng-traineddata.wasm'),o);importScripts('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js');`;
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('tempo esgotado ao carregar o OCR')), 90000));
+    ocrWorker = await Promise.race([timeout, Tesseract.createWorker('eng', 1, {
+      workerPath: URL.createObjectURL(new Blob([shim], { type: 'application/javascript' })), workerBlobURL: false,
+      corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',
+      langPath: new URL('tessdata', location.href).href,
+      logger: m => { if (m.status && m.progress != null && m.progress < 1 && /load|init/.test(m.status)) status(`Carregando OCR: ${m.status} ${(m.progress * 100).toFixed(0)}%`, true); }
+    })]);
+    diag('OCR: pronto');
+    return ocrWorker;
+  } catch (err) { console.warn('OCR indisponível', err); diag('OCR: FALHOU', String(err && (err.message || err))); ocrFailed = true; ocrWorker = null; return null; }
+}
+async function ocr(canvas, mode) {
+  const w = await getOCR(); if (!w) return null;
+  const P = {
+    foot: { tessedit_pageseg_mode: '11', tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/- ' },
+    hp: { tessedit_pageseg_mode: '7', tessedit_char_whitelist: 'HPS0123456789 ' },
+    body: { tessedit_pageseg_mode: '11', tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzéÉ'- " },
+    name: { tessedit_pageseg_mode: '7', tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzéÉ'-.: " }
+  };
+  await w.setParameters(P[mode]);
+  const { data } = await w.recognize(canvas);
+  return data.text.replace(/\s+/g, ' ').trim();
+}
+
+/* ======================= Identificação ======================= */
+// Códigos impressos no rodapé (ex.: "MEW EN 025/165", "MEP EN 022", "SVP 044").
+let SET_CODES = null;
+function setCodes() { if (SET_CODES) return SET_CODES; SET_CODES = new Map(); DB.sets.forEach((st, k) => { const c = (st[6] || '').replace(/^PR-/, '').toUpperCase(); if (c.length >= 3) { if (!SET_CODES.has(c)) SET_CODES.set(c, []); SET_CODES.get(c).push(k); } }); return SET_CODES; }
+function parseFoot(t) {
+  // nums: "025/165" (forte) · promo: número logo depois do código ("MEP EN 022") · loose: números soltos (fracos)
+  const f = { nums: [], promo: [], loose: [], codes: [] }; if (!t) return f;
+  const T = t.toUpperCase(), codes = setCodes();
+  const fix = tok => { const d = tok.replace(/[^0-9]/g, '').length; return d >= tok.length / 2 ? tok.replace(/O/g, '0').replace(/[SZ]/g, m => m === 'S' ? '5' : '2').replace(/[IL]/g, '1').replace(/B/g, '8').replace(/G/g, '6') : tok; };
+  for (const m of T.matchAll(/(\d{1,3})\s*\/\s*(\d{2,3})/g)) f.nums.push({ n: String(parseInt(m[1], 10)), total: parseInt(m[2], 10) });
+  const toks = T.split(/[^A-Z0-9]+/).filter(Boolean);
+  toks.forEach((tok, i) => {
+    let code = codes.has(tok) ? tok : (/^[A-Z]{3}(EN|PT)$/.test(tok) && codes.has(tok.slice(0, 3)) ? tok.slice(0, 3) : null);
+    if (!code) return; f.codes.push(code);
+    for (let j = i + 1; j <= i + 3 && j < toks.length; j++) {
+      const x = fix(toks[j]); if (x === 'EN' || x === 'PT') continue; if (!/^\d+$/.test(x)) continue;
+      if (x.length <= 3) f.promo.push({ n: String(parseInt(x, 10)), w: 1 });
+      else if (x.length <= 6) for (let k = 0; k + 3 <= x.length; k++) f.promo.push({ n: String(parseInt(x.slice(k, k + 3), 10)), w: .7 }); // "EN 022★" lido como "10228"
+      break;
+    }
+  });
+  if (!f.nums.length) for (const tok of toks) if (/^\d{1,3}$/.test(tok)) f.loose.push(String(parseInt(tok, 10)));
+  return f;
+}
+function parseHP(t) { if (!t) return null; const m = t.toUpperCase().match(/(?:HP|PS)\s*(\d{2,3})\b|^\s*(\d{2,3})\s*$/); const v = m && +(m[1] || m[2]); return v && v >= 30 && v <= 400 && v % 10 === 0 ? v : null; }
+function identify(nameText, footText, typeHint, hpText) {
+  const foot = parseFoot(footText), hp = parseHP(hpText), tnorm = norm(nameText);
+  const codeSets = new Set(foot.codes.flatMap(c => setCodes().get(c) || []));
+  const hasName = tnorm.length >= 3;
+  const scores = new Map();
+  const consider = i => { if (!scores.has(i)) scores.set(i, { i, name: 0, num: 0, set: 0, hp: 0 }); return scores.get(i); };
+  const bump = (i, w) => { const s = consider(i); s.num = Math.max(s.num, w); };
+  for (const { n } of foot.nums) for (const i of DB.byNumber.get(n) || []) bump(i, 1);
+  for (const { n, w } of foot.promo) for (const i of DB.byNumber.get(n) || []) if (codeSets.has(DB.cards[i][3])) bump(i, w);
+  // números soltos só geram candidatas quando não há nome (ex.: busca manual só com "25")
+  if (!hasName) for (const n of foot.loose) for (const i of DB.byNumber.get(n) || []) bump(i, .4);
+  if (hasName) {
+    const sims = DB.names.map(([nm, ids]) => [nameSim(nm, tnorm), ids]).sort((a, b) => b[0] - a[0]).slice(0, 12);
+    for (const [sim, ids] of sims) for (const i of ids) { const s = consider(i); s.name = Math.max(s.name, sim); }
+    for (const s of scores.values()) if (!s.name) s.name = nameSim(norm(DB.cards[s.i][1]), tnorm);
+  }
+  const has = { name: hasName, num: foot.nums.length + foot.promo.length + foot.loose.length > 0, set: foot.nums.length + foot.codes.length > 0, hp: hp != null };
+  const list = [...scores.values()].map(s => {
+    const c = DB.cards[s.i], st = DB.sets[c[3]], no = String(parseInt(c[2], 10));
+    if (!s.num && foot.loose.includes(no)) s.num = .4;
+    s.set = foot.nums.some(x => x.total === st[3] || x.total === st[4]) || codeSets.has(c[3]) ? 1 : 0;
+    s.hp = hp != null && String(hp) === c[6] ? 1 : 0;
+    s.type = typeHint && c[5] === typeHint ? 1 : 0;
+    return scoreCand(s, has);
+  }).sort(byScore);
+  return { list: list.slice(0, 6), all: list.slice(0, 40), foot, hp, has, hasName, hasNum: has.num };
+}
+const byScore = (a, b) => b.score - a.score || DB.cards[b.i][3] - DB.cards[a.i][3];
+function scoreCand(s, has) {
+  // o nome decide o Pokémon; número, coleção e ataques decidem a versão
+  const parts = []; if (has.num) parts.push(s.num); if (has.set) parts.push(s.set); if (has.atk) parts.push(s.atk || 0);
+  const version = parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : .5;
+  let sc = has.name ? s.name * (.7 + .3 * version) + (s.hp ? .03 : 0) : .8 * version;
+  if (!has.name && !has.set) sc = Math.min(sc, .5);
+  sc += s.type ? .01 : 0;
+  return { ...s, version, score: Math.min(1, sc) };
+}
+// Lê os nomes dos ataques (letras grandes, OCR confiável) e compara com as versões candidatas do mesmo Pokémon.
+async function refineWithAttacks(id, bodyText) {
+  const tn = norm(bodyText); if (!id.all.length || tn.replace(/ /g, '').length < 8) return id;
+  const top = id.all[0].name, pool = id.all.filter(s => s.name >= top - .1).slice(0, 30);
+  if (pool.length < 2) return id;
+  const det = {}; await Promise.all([...new Set(pool.map(s => DB.sets[DB.cards[s.i][3]][0]))].map(async st => { det[st] = await setDetails(st); }));
+  let best = 0;
+  for (const s of pool) { const c = DB.cards[s.i], d = det[DB.sets[c[3]][0]][c[0]] || {}; const names = [...(d.abilities || []), ...(d.attacks || [])].map(a => norm(a.name)).filter(n => n.length >= 3); s.atk = names.length ? names.reduce((a, n) => a + nameSim(n, tn), 0) / names.length : 0; s.atkNames = names; best = Math.max(best, s.atk); }
+  if (best < .6) return id; // ataques ilegíveis ou em outro idioma: não usa
+  const has = { ...id.has, atk: true };
+  const all = id.all.map(s => scoreCand(pool.includes(s) ? s : { ...s, atk: 0 }, has)).sort(byScore);
+  return { ...id, has, all, list: all.slice(0, 6), bodyText };
+}
+
+/* ======================= Pipeline ======================= */
+const CARD_W = 630, CARD_H = 880;
+let RUN = 0, current = null;
+async function loadImageFile(file) {
+  if (window.createImageBitmap) { try { return await createImageBitmap(file); } catch (e) { console.warn('createImageBitmap falhou', e); } }
+  const url = URL.createObjectURL(file);
+  try { const im = new Image(); await new Promise((ok, bad) => { im.onload = ok; im.onerror = () => bad(new Error('imagem inválida')); im.src = url; }); return im; }
+  finally { setTimeout(() => URL.revokeObjectURL(url), 5000); }
+}
+function toCanvas(im, maxSide) { const k = Math.min(1, maxSide / Math.max(im.width, im.height)); const c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c; }
+
+async function runPipeline(srcImg, label) {
+  const run = ++RUN; resetStages(); $('#result').hidden = true; $('#ocr').replaceChildren(); setEditing(false);
+  let t = performance.now();
+  const full = toCanvas(srcImg, 2400);
+  VF.src = full; VF.corners = null; drawVF(); $('#vf-tag').textContent = label || 'FOTO';
+  const small = toCanvas(full, 640), sctx = small.getContext('2d'), simg = sctx.getImageData(0, 0, small.width, small.height);
+  showStage(0, small, performance.now() - t, `${full.width}×${full.height} px`); await frame(); if (run !== RUN) return;
+  status('Detectando a carta…', true);
+  t = performance.now(); const pre = gauss(stretch(toGray(simg))); showStage(1, grayCanvas(pre), performance.now() - t); await frame();
+  t = performance.now(); const sob = sobel(pre); const th = otsu(sob.g); const thin = new Uint8Array(sob.g.length); for (let i = 0; i < thin.length; i++) thin[i] = sob.g[i] > th ? 1 : 0; const dil1 = dilate(thin, sob.w, sob.h); const edges = dilate(dil1, sob.w, sob.h);
+  showStage(2, grayCanvas(sob, (v, i) => edges[i] ? 255 : 0), performance.now() - t); await frame();
+  t = performance.now(); const { mask, area } = segment(edges, sob.w, sob.h);
+  const pts = []; const w = sob.w, h = sob.h; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (mask[i] && (x === 0 || y === 0 || x === w - 1 || y === h - 1 || !mask[i - 1] || !mask[i + 1] || !mask[i - w] || !mask[i + w])) pts.push([x, y]); }
+  const hq = houghQuad(thin, dilate(dil1, sob.w, sob.h), w, h, sob.ang);
+  let Q = hq.quad ? hq.quad.Q : (pts.length > 10 ? maxQuad(hull(pts)) : null);
+  const method = hq.quad ? `Hough · ${hq.lines.length} retas · apoio ${(hq.quad.support * 100).toFixed(0)}%` : 'preenchimento do fundo';
+  diag('contorno', method);
+  const k = full.width / small.width;
+  let detected = !!Q && (hq.quad || area > w * h * 0.06);
+  if (detected && hq.quad) Q = Q.map(([x, y]) => [x * k, y * k]);
+  else if (detected) { Q = orderCorners(Q); const cx = Q.reduce((s, p) => s + p[0], 0) / 4, cy = Q.reduce((s, p) => s + p[1], 0) / 4; Q = Q.map(([x, y]) => { const d = Math.hypot(x - cx, y - cy); const f = Math.max(0, d - 2) / d; return [(cx + (x - cx) * f) * k, (cy + (y - cy) * f) * k]; }); }
+  else { const mw = full.width, mh = full.height, cw = Math.min(mw * .7, mh * .7 * 63 / 88), ch = cw * 88 / 63; Q = [[(mw - cw) / 2, (mh - ch) / 2], [(mw + cw) / 2, (mh - ch) / 2], [(mw + cw) / 2, (mh + ch) / 2], [(mw - cw) / 2, (mh + ch) / 2]]; }
+  const segC = document.createElement('canvas'); segC.width = w; segC.height = h; const sc = segC.getContext('2d'); sc.drawImage(small, 0, 0); const ov = sc.getImageData(0, 0, w, h); for (let i = 0; i < mask.length; i++) if (!mask[i]) { ov.data[i * 4] *= .25; ov.data[i * 4 + 1] *= .25; ov.data[i * 4 + 2] *= .3; } sc.putImageData(ov, 0, 0);
+  sc.strokeStyle = 'rgba(255,90,71,.55)'; sc.lineWidth = 1; for (const L of hq.lines) { const c = Math.cos(L.t * Math.PI / 180), s2 = Math.sin(L.t * Math.PI / 180); sc.beginPath(); if (Math.abs(s2) > .5) { sc.moveTo(0, L.r / s2); sc.lineTo(w, (L.r - w * c) / s2); } else { sc.moveTo(L.r / c, 0); sc.lineTo((L.r - h * s2) / c, h); } sc.stroke(); }
+  sc.strokeStyle = '#3fd0e6'; sc.lineWidth = 3; sc.beginPath(); Q.forEach(([x, y], j) => sc[j ? 'lineTo' : 'moveTo'](x / k, y / k)); sc.closePath(); sc.stroke();
+  showStage(3, segC, performance.now() - t, `${(performance.now() - t).toFixed(0)} ms · ${hq.quad ? 'Hough' : 'preench.'}`);
+  VF.corners = Q; drawVF(); $('#btn-adjust').disabled = false;
+  if (detected) { const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]); const ratio = (d(Q[0], Q[1]) + d(Q[2], Q[3])) / (d(Q[1], Q[2]) + d(Q[3], Q[0])); if (Math.abs(ratio - 63 / 88) > .14) detected = 'ratio'; }
+  current = { full, detected };
+  await runFromCorners(false);
+}
+
+async function runFromCorners(manual) {
+  const run = ++RUN, full = current.full, srcData = full.getContext('2d').getImageData(0, 0, full.width, full.height);
+  if (manual) { [4, 5, 6].forEach(i => { stageEls[i].d.classList.add('pending'); stageEls[i].ms.textContent = '—'; }); $('#result').hidden = true; }
+  const notes = [];
+  if (!manual && current.detected === false) notes.push('Não encontrei o contorno da carta com segurança. Usei um quadro central; toque em “Ajustar cantos” para corrigir.');
+  if (!manual && current.detected === 'ratio') notes.push('O contorno encontrado não tem a proporção de uma carta (63×88 mm). Confira os cantos.');
+  let best = null;
+  const nameROI = [0.03, 0.02, 0.72, 0.085], nameROI2 = [0.15, 0.02, 0.72, 0.085], hpROI = [0.6, 0.015, 0.97, 0.11], numROI = [0.02, 0.9, 0.98, 0.985];
+  const stretchImg = img => { const g = stretch(toGray(img)); const o = new ImageData(img.width, img.height); for (let i = 0; i < g.g.length; i++) { o.data[i * 4] = o.data[i * 4 + 1] = o.data[i * 4 + 2] = g.g[i]; o.data[i * 4 + 3] = 255; } return o; };
+  { // a carta é analisada como foi fotografada (em pé), sem testar outras orientações
+    const C = VF.corners;
+    let t = performance.now();
+    const warped = warp(srcData, C, CARD_W, CARD_H); const wc = canvasFrom(warped);
+    showStage(4, wc, performance.now() - t, `${CARD_W}×${CARD_H}`); await frame(); if (run !== RUN) return;
+    t = performance.now();
+    // três tratamentos da faixa do nome; fica o que gerar a identificação mais confiável
+    const n15 = warp(srcData, C, CARD_W * 1.5, CARD_H * 1.5, nameROI2);
+    const nameVariants = [
+      ['realçada', canvasFrom(stretchImg(warp(srcData, C, CARD_W * 1.5, CARD_H * 1.5, nameROI)))],
+      ['limiar adaptativo', canvasFrom(adaptive(n15, Math.round(n15.height * 0.9)))],
+      ['realçada 3×', canvasFrom(stretchImg(warp(srcData, C, CARD_W * 3, CARD_H * 3, nameROI2)))]];
+    const hpC = canvasFrom(stretchImg(warp(srcData, C, CARD_W * 3, CARD_H * 3, hpROI)));
+    const numC = canvasFrom(stretchImg(warp(srcData, C, CARD_W * 3, CARD_H * 3, numROI)));
+    const dom = dominantType(warped);
+    const roiC = canvasFrom(warped), rc = roiC.getContext('2d'); rc.lineWidth = 5;
+    [[nameROI, '#ff5a47'], [hpROI, '#b98cff'], [numROI, '#3fd0e6'], [[0.08, 0.5, 0.92, 0.88], '#f0b400']].forEach(([r, col]) => { rc.strokeStyle = col; rc.strokeRect(r[0] * CARD_W, r[1] * CARD_H, (r[2] - r[0]) * CARD_W, (r[3] - r[1]) * CARD_H); });
+    showStage(5, roiC, performance.now() - t);
+    await DB.ready;
+    const t2 = performance.now();
+    status('Lendo o texto da carta…', true);
+    const reads = [];
+    for (const [label, cv] of nameVariants) { const txt = await ocr(cv, 'name'); if (run !== RUN) return; if (txt === null) { reads.length = 0; break; } reads.push([label, cv, txt]); }
+    if (!reads.length) { window.__runs = (window.__runs || 0) + 1; $('#ocr').replaceChildren(el('p', { class: 'read', text: 'OCR indisponível neste navegador' })); status('O leitor de texto não carregou aqui. Digite o nome ou número em “Buscar sem foto”.', false); stageEls[6].ms.textContent = 'sem OCR'; return; }
+    // rodapé lido duas vezes (realçado 3× e limiar adaptativo 2×) e as leituras são somadas: o código da coleção é pequeno
+    const foot2 = warp(srcData, C, CARD_W * 2, CARD_H * 2, numROI);
+    const footText = [await ocr(numC, 'foot'), await ocr(canvasFrom(adaptive(foot2, Math.round(foot2.height * 0.6))), 'foot')].join(' ').trim(); if (run !== RUN) return;
+    const hpText = await ocr(hpC, 'hp'); if (run !== RUN) return;
+    // escolhe a variante do nome que gera a melhor identificação
+    let att = null;
+    for (const [label, cv, txt] of reads) { const id = identify(txt, footText, dom.type, hpText); const sc = id.list[0] ? id.list[0].score : 0; if (!att || sc > att.score) att = { id, score: sc, label, cv, txt }; }
+    diag('OCR lido', `nome=${reads.map(r => `“${r[2]}”`).join('/')} PS=“${hpText}” rodapé=“${footText}” → ${att.id.list[0] ? DB.cards[att.id.list[0].i][0] : '-'} ${(att.score * 100).toFixed(0)}%`);
+    (window.__debug = window.__debug || []).push({ warped: wc.toDataURL('image/jpeg', .85), name: att.cv.toDataURL(), num: numC.toDataURL(), corners: C });
+    const cand = { ...att, warped: wc, roi: roiC, numC, hpC, footText, hpText, dom, ms: performance.now() - t2 };
+    best = cand;
+  }
+  // versões do mesmo Pokémon empatadas? lê os nomes dos ataques para desempatar
+  if (best.id.all.length > 1 && best.id.all[1].name >= best.id.all[0].name - .1 && best.id.has.name) {
+    status('Comparando os ataques com as versões dessa carta…', true);
+    const C = VF.corners;
+    const bodyC = canvasFrom(stretchImg(warp(srcData, C, CARD_W * 1.5, CARD_H * 1.5, [0.04, 0.42, 0.96, 0.9])));
+    const bodyText = await ocr(bodyC, 'body'); if (run !== RUN) return;
+    const before = DB.cards[best.id.list[0].i][0];
+    best.id = await refineWithAttacks(best.id, bodyText || ''); best.score = best.id.list[0].score; best.bodyC = bodyC;
+    diag('ataques', `“${(bodyText || '').slice(0, 80)}” → ${before} ⇒ ${DB.cards[best.id.list[0].i][0]} ${(best.score * 100).toFixed(0)}%`);
+  }
+  { const L = best.id.list; best.id.ambiguous = L.length > 1 && L[0].score - L[1].score < .03 ? L.filter(x => L[0].score - x.score < .03).length : 0; }
+  // regiões e leituras da tentativa escolhida
+  showStage(5, best.roi, 0, 'nome · PS · rodapé');
+  { const box = $('#ocr'), d = best.dom; box.replaceChildren();
+    const sw = el('span', { class: 'chip', style: `background:rgb(${d.rgb.join(',')});color:${(d.rgb[0] * .3 + d.rgb[1] * .59 + d.rgb[2] * .11) > 140 ? '#000' : '#fff'}`, text: `cor do corpo → ${TYPE_PT[d.type]}` });
+    const f = best.id.foot, foot = [f.codes.length ? `código ${f.codes.join(', ')}` : null, f.nums.length ? `número ${f.nums.map(x => `${x.n}/${x.total}`).join(', ')}` : null, f.promo.length ? `número de promo ${[...new Set(f.promo.map(x => x.n))].join(', ')}` : null, f.loose.length ? `números soltos ${f.loose.join(', ')}` : null].filter(Boolean).join(' · ');
+    box.append(
+      el('div', { class: 'roi' }, el('h3', { text: `Faixa do nome (${best.label})` }), best.cv, el('div', { class: 'read', text: `lido: “${best.txt || '(vazio)'}”` })),
+      el('div', { class: 'roi' }, el('h3', { text: 'PS (canto superior direito)' }), best.hpC, el('div', { class: 'read', text: `lido: “${best.hpText || '(vazio)'}”${best.id.hp ? ` → PS ${best.id.hp}` : ''}` })),
+      el('div', { class: 'roi' }, el('h3', { text: 'Rodapé (código da coleção e número)' }), best.numC, el('div', { class: 'read', text: `lido: “${best.footText || '(vazio)'}”${foot ? ` → ${foot}` : ''}` })),
+      best.id.bodyText != null ? el('div', { class: 'roi' }, el('h3', { text: 'Ataques (desempate entre versões)' }), el('div', { class: 'read', text: `lido: “${best.id.bodyText.slice(0, 120)}…” → ${(best.id.list[0].atkNames || []).join(', ') || '—'} (${((best.id.list[0].atk || 0) * 100).toFixed(0)}%)` })) : null,
+      el('div', { class: 'row' }, el('h3', { text: 'Cor predominante' }), sw)); }
+  // mostra o melhor resultado
+  const sc = document.createElement('canvas'); sc.width = 264; sc.height = 264; const g = sc.getContext('2d');
+  g.fillStyle = '#0b1117'; g.fillRect(0, 0, 264, 264); g.font = '600 15px JetBrains Mono, monospace'; g.fillStyle = '#3fd0e6';
+  (best.id.list.slice(0, 5)).forEach((s, i) => { const c = DB.cards[s.i]; g.fillStyle = i ? '#9aabbb' : '#3fd0e6'; g.fillText(`${(s.score * 100).toFixed(0).padStart(3)}% ${c[1].slice(0, 16)}`, 12, 34 + i * 26); g.fillStyle = '#5b6b7a'; g.font = '12px JetBrains Mono, monospace'; g.fillText(`     ${numLabel(c[2], { name: DB.sets[c[3]][1], printed: DB.sets[c[3]][3], code: DB.sets[c[3]][6] })} ${DB.sets[c[3]][0]}`, 12, 48 + i * 26); g.font = '600 15px JetBrains Mono, monospace'; });
+  if (!best.id.list.length) { g.fillStyle = '#ff7a70'; g.fillText('nenhuma candidata', 12, 34); }
+  showStage(6, sc, best.ms);
+  status(best.id.list.length ? 'Pronto.' : 'Não consegui identificar. Ajuste os cantos ou busque sem foto.', false);
+  diag('identificação', best.id.list.length ? `${DB.cards[best.id.list[0].i][0]} ${(best.score * 100).toFixed(0)}%` : 'nenhuma');
+  await showResult(best.id, best.warped, notes);
+  window.__runs = (window.__runs || 0) + 1;
+}
+
+/* ======================= Ficha da carta ======================= */
+function confClass(s) { return s >= .8 ? ['alta', 'Confiança alta'] : s >= .55 ? ['media', 'Confiança média'] : ['baixa', 'Confiança baixa']; }
+const typeChip = t => el('span', { class: 'chip type', style: `background:${TYPE_COLOR[t] || '#888'}`, text: TYPE_PT[t] || t });
+const costDots = cost => { const s = el('span', { class: 'cost' }); (cost || []).forEach(t => s.append(el('i', { style: `background:${TYPE_COLOR[t] || '#ccc'}`, title: TYPE_PT[t] || t }))); return s; };
+const fmtDate = d => { const [y, m, dd] = d.split('/'); return `${dd}/${m}/${y}`; };
+const ligaURL = c => `https://www.ligapokemon.com.br/?view=cards/search&card=${encodeURIComponent(c.name)}`;
+
+function mockPrice(c, cond) { // DADOS FICTÍCIOS: só para ilustrar o painel de preços
+  const base = { 'Common': 0.5, 'Uncommon': 1, 'Rare': 3, 'Rare Holo': 8, 'Double Rare': 12, 'Ultra Rare': 35, 'Illustration Rare': 45, 'Special Illustration Rare': 180, 'Hyper Rare': 120 }[c.rarity] ?? 6;
+  let h = 0; for (const ch of c.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const f = 0.7 + (h % 100) / 100;
+  const age = Math.max(0, 2026 - parseInt(c.set.date, 10)); const k = { NM: 1, SP: .8, MP: .6, HP: .4, D: .25 }[cond];
+  const mid = base * f * (1 + age * .08) * k * 5.6; return [mid * .7, mid, mid * 1.6];
+}
+async function showResult(id, warpedCanvas, notes = []) {
+  const R = $('#result'); R.replaceChildren(); R.hidden = false;
+  if (!id.list.length) { R.append(el('h2', { id: 'h-res', text: 'Carta não identificada' }), el('p', { class: 'muted', text: 'Ajuste os cantos, tente outra foto com menos reflexo, ou busque pelo nome/número.' })); return; }
+  const top = id.list[0], c = cardObj(top.i);
+  const det = (await setDetails(c.set.id))[c.id] || {};
+  let [cc, cl] = confClass(top.score);
+  if (id.ambiguous && id.list[0] === top && cc === 'alta') [cc, cl] = ['media', 'Versão incerta'];
+  for (const n of notes) R.append(el('div', { class: 'notice', text: n }));
+  if (id.ambiguous && id.list[0] === top) R.append(el('div', { class: 'notice', text: `Há ${id.ambiguous} versões desta carta com o mesmo texto. Confira o código da coleção no rodapé da sua carta (ex.: “MEP EN 022”) e, se for outra, toque nela em “Outras candidatas”.` }));
+  const thumb = document.createElement('canvas'); if (warpedCanvas) { thumb.width = 220; thumb.height = Math.round(220 * CARD_H / CARD_W); thumb.getContext('2d').drawImage(warpedCanvas, 0, 0, thumb.width, thumb.height); }
+  const why = []; if (id.has?.name) why.push(`nome ${(top.name * 100).toFixed(0)}%`); if (id.has?.num) why.push(top.num >= 1 ? 'número bate' : top.num > 0 ? 'número provável' : 'número não bate'); if (id.has?.set) why.push(top.set ? 'coleção bate' : 'coleção não bate'); if (id.has?.hp) why.push(top.hp ? 'PS bate' : 'PS não bate'); if (id.has?.atk) why.push(`ataques ${((top.atk || 0) * 100).toFixed(0)}%`);
+  R.append(el('div', { class: 'result-head' }, warpedCanvas ? thumb : el('div'),
+    el('div', { style: 'display:flex;flex-direction:column;gap:6px;min-width:0' },
+      el('span', { class: `conf ${cc}`, text: `${cl} · ${(top.score * 100).toFixed(0)}%` }),
+      el('div', { class: `meter ${cc}`, role: 'meter', 'aria-label': 'Confiança', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(Math.round(top.score * 100)) }, ...Array.from({ length: 10 }, (_, k) => el('b', { class: k < Math.round(top.score * 10) ? 'on' : '' }))),
+      el('h2', { id: 'h-res', class: 'cardname', text: c.name }),
+      el('div', { class: 'setline mono', text: `${numLabel(c.number, c.set)} · ${c.set.name}` }),
+      el('div', { class: 'chips' }, ...(det.types || []).map(typeChip), c.hp ? el('span', { class: 'chip mono', text: `PS ${c.hp}` }) : null, c.rarity ? el('span', { class: 'chip', text: RARITY_PT[c.rarity] || c.rarity }) : null),
+      el('div', { class: 'small muted', text: why.join(' · ') }))));
+
+  // Conferência visual: sua foto ao lado da imagem oficial da carta identificada
+  { const fig1 = el('figure', {}, el('figcaption', { text: 'Sua foto (corrigida)' }));
+    if (warpedCanvas) { const cc2 = document.createElement('canvas'); cc2.width = 315; cc2.height = 440; cc2.getContext('2d').drawImage(warpedCanvas, 0, 0, 315, 440); fig1.append(cc2); } else fig1.append(el('div', { class: 'noimg', text: 'Busca sem foto' }));
+    const fig2 = el('figure', {}, el('figcaption', { text: 'Imagem oficial' }));
+    const links = el('div', { class: 'row' });
+    if (det.img && /^https:\/\//.test(det.img)) {
+      const img = el('img', { alt: `Imagem oficial de ${c.name}`, referrerpolicy: 'no-referrer' });
+      img.onerror = () => { img.replaceWith(el('div', { class: 'noimg', text: 'Esta página não consegue mostrar imagens de outros sites. Toque em “Abrir imagem oficial”.' })); diag('imagem oficial bloqueada', det.img); };
+      img.src = det.img; fig2.append(img);
+      links.append(el('a', { class: 'btn', href: det.img, target: '_blank', rel: 'noopener' }, 'Abrir imagem oficial ↗'));
+    } else fig2.append(el('div', { class: 'noimg', text: 'Sem imagem oficial na base' }));
+    links.append(el('a', { class: 'btn', href: ligaURL(c), target: '_blank', rel: 'noopener' }, 'Ver na Liga Pokémon ↗'));
+    R.append(el('h3', { text: 'Confira se é a mesma carta' }), el('div', { class: 'compare' }, fig1, fig2), links); }
+
+  // Identificação
+  R.append(el('h3', { text: 'Identificação' }), el('dl', { class: 'kv' },
+    el('dt', { text: 'Coleção' }), el('dd', { text: `${c.set.name} (${c.set.series})` }),
+    el('dt', { text: 'Lançamento' }), el('dd', { text: fmtDate(c.set.date) }),
+    el('dt', { text: 'Número' }), el('dd', { class: 'mono', text: `${numLabel(c.number, c.set)}${c.set.printed && c.set.total > c.set.printed && !/Promos/.test(c.set.name) ? ` (${c.set.total} com secretas)` : ''}` }),
+    el('dt', { text: 'Categoria' }), el('dd', { text: [SUPER_PT[c.sup], ...(det.subtypes || []).map(s => SUBTYPE_PT[s] || s)].join(' · ') }),
+    det.evolvesFrom ? el('dt', { text: 'Evolui de' }) : null, det.evolvesFrom ? el('dd', { text: det.evolvesFrom }) : null,
+    det.regulationMark ? el('dt', { text: 'Marca de regulação' }) : null, det.regulationMark ? el('dd', { class: 'mono', text: det.regulationMark }) : null,
+    det.artist ? el('dt', { text: 'Ilustração' }) : null, det.artist ? el('dd', { text: det.artist }) : null,
+    el('dt', { text: 'Código' }), el('dd', { class: 'mono', text: c.id })));
+
+  // Ataques
+  if (det.abilities || det.attacks) {
+    R.append(el('h3', { text: 'Habilidades e ataques' }));
+    for (const a of det.abilities || []) R.append(el('div', { class: 'attack' }, el('b', { text: `${a.type}: ${a.name}` }), el('span'), el('div', { class: 'txt', text: a.text })));
+    for (const a of det.attacks || []) R.append(el('div', { class: 'attack' }, el('div', {}, costDots(a.cost), el('b', { text: a.name })), el('span', { class: 'dmg', text: a.damage || '' }), a.text ? el('div', { class: 'txt', text: a.text }) : null));
+    const wr = []; if (det.weaknesses) wr.push(el('dt', { text: 'Fraqueza' }), el('dd', { text: det.weaknesses.map(x => `${TYPE_PT[x.type] || x.type} ${x.value}`).join(', ') }));
+    if (det.resistances) wr.push(el('dt', { text: 'Resistência' }), el('dd', { text: det.resistances.map(x => `${TYPE_PT[x.type] || x.type} ${x.value}`).join(', ') }));
+    if (det.retreatCost) wr.push(el('dt', { text: 'Recuo' }), el('dd', {}, costDots(det.retreatCost)));
+    if (wr.length) R.append(el('dl', { class: 'kv' }, ...wr));
+  }
+  if (det.rules && c.sup !== 'P') R.append(el('p', { class: 'small muted', text: det.rules.join(' ') }));
+
+  // Pokédex
+  const dexNo = c.dex || (det.nationalPokedexNumbers || [])[0];
+  const dx = dexNo && DB.dex[String(dexNo)];
+  if (dx) {
+    const sp = el('div', { class: 'sprite', role: 'img', 'aria-label': dx.n });
+    const col = (dexNo - 1) % 32, row = Math.floor((dexNo - 1) / 32), z = 120 / 96;
+    sp.style.backgroundImage = 'url(data/sprites.png)'; sp.style.backgroundSize = `${3072 * z}px ${3168 * z}px`; sp.style.backgroundPosition = `${-col * 120}px ${-row * 120}px`;
+    const stats = el('div', { class: 'stats' }); dx.s.forEach((v, i) => stats.append(el('span', { class: 'muted', text: STAT_PT[i] }), el('span', { class: 'mono', text: String(v) }), el('div', { class: 'bar' }, el('i', { style: `width:${Math.min(100, v / 1.6)}%` }))));
+    const tags = []; if (dx.leg) tags.push('Lendário'); if (dx.myth) tags.push('Mítico');
+    R.append(el('h3', { text: `Pokédex nº ${String(dexNo).padStart(4, '0')}` }),
+      el('div', { class: 'dex' }, sp, el('div', { style: 'display:flex;flex-direction:column;gap:6px;min-width:0' },
+        el('div', { style: 'font:400 32px/1 var(--f-display);color:var(--edge)', text: dx.n }),
+        el('div', { class: 'small muted', text: `${dx.g}${dx.ja ? ` · ${dx.ja}` : ''}` }),
+        el('div', { class: 'chips' }, ...dx.t.map(t => el('span', { class: 'chip type', style: `background:${DEX_TYPE_COLOR[t]}`, text: DEX_TYPE_PT[t] || t })), ...tags.map(t => el('span', { class: 'chip', text: t }))),
+        el('dl', { class: 'kv small' }, el('dt', { text: 'Altura' }), el('dd', { class: 'mono', text: `${(dx.h / 10).toLocaleString('pt-BR')} m` }), el('dt', { text: 'Peso' }), el('dd', { class: 'mono', text: `${(dx.w / 10).toLocaleString('pt-BR')} kg` }), el('dt', { text: 'Geração' }), el('dd', { class: 'mono', text: String(dx.gen) })))),
+      dx.f ? el('p', { class: 'flavor small', text: `${dx.f}${dx.fl === 'es' ? ' (texto oficial em espanhol)' : ''}` }) : null,
+      det.flavorText ? el('p', { class: 'flavor small', text: `Na carta: ${det.flavorText}` }) : null,
+      stats);
+  }
+
+  // Mercado
+  const condSel = el('select', { id: 'cond', style: 'font:inherit;padding:8px 12px;border-radius:10px;border:3px solid var(--edge);background:#fffdf0;color:var(--ink)' });
+  [['NM', 'Praticamente nova (NM)'], ['SP', 'Pouco jogada (SP)'], ['MP', 'Moderadamente jogada (MP)'], ['HP', 'Muito jogada (HP)'], ['D', 'Danificada (D)']].forEach(([v, t]) => condSel.append(el('option', { value: v, text: t })));
+  const prices = el('div', { class: 'prices' });
+  const fill = () => { const p = mockPrice(c, condSel.value).map(v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })); prices.replaceChildren(...['Menor', 'Médio', 'Maior'].map((l, i) => el('div', {}, el('b', { text: p[i] }), el('span', { text: l })))); };
+  condSel.onchange = fill; fill();
+  R.append(el('h3', { text: 'Mercado' }),
+    el('a', { class: 'btn primary', href: ligaURL(c), target: '_blank', rel: 'noopener' }, 'Ver preços reais na Liga Pokémon ↗'),
+    el('div', { class: 'mockbox' }, el('span', { class: 'mockbadge', text: 'Dados fictícios · layout do módulo de preços' }), el('label', { class: 'small', for: 'cond', text: 'Estado da carta' }), condSel, prices,
+      el('p', { class: 'small muted', text: 'A Liga Pokémon não tem API pública. Para valores reais no app, será preciso uma parceria com a Liga ou outra fonte de preços com API.' })));
+
+  // Ações
+  const saveBtn = el('button', { class: 'btn primary', type: 'button', text: 'Salvar na coleção' });
+  saveBtn.onclick = () => { const thumbURL = warpedCanvas ? (() => { const t = document.createElement('canvas'); t.width = 96; t.height = 134; t.getContext('2d').drawImage(warpedCanvas, 0, 0, 96, 134); return t.toDataURL('image/jpeg', .7); })() : null; const col = store.get('colecao', []); const ts = Date.now(); col.unshift({ id: c.id, ts, img: thumbURL }); const ok = store.set('colecao', col); const inB = ok && binderAdd(ts); if (ok) colChanged(); saveBtn.textContent = ok ? (inB ? 'Salva ✓ · no binder' : 'Salva ✓ · binder cheio') : 'Não foi possível salvar neste navegador'; saveBtn.disabled = true; renderColl(); };
+  R.append(el('div', { class: 'row' }, saveBtn));
+
+  // Outras candidatas
+  if (id.list.length > 1) {
+    const cands = el('div', { class: 'cands' });
+    id.list.slice(1).forEach(s => { const o = cardObj(s.i); const b = el('button', { class: 'cand', type: 'button' }, el('span', {}, el('b', { text: o.name }), el('br'), el('span', { class: 's', text: `${numLabel(o.number, o.set)} · ${o.set.name}` })), el('span', { class: 's', text: `${(s.score * 100).toFixed(0)}%` })); b.onclick = () => { const l = [s, ...id.list.filter(x => x !== s)]; showResult({ ...id, list: l }, warpedCanvas); R.scrollIntoView({ behavior: 'smooth' }); }; cands.append(b); });
+    R.append(el('h3', { text: 'Não é essa? Outras candidatas' }), cands);
+  }
+}
+
+const STICKERS = {"chama": {"n": "Chama", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M5 0h1v1h-1zM4 1h1v1h-1zM6 1h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM3 3h1v1h-1zM8 3h1v1h-1zM2 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM2 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM1 6h1v1h-1zM11 6h1v1h-1zM1 7h1v1h-1zM11 7h1v1h-1zM1 8h1v1h-1zM11 8h1v1h-1zM1 9h1v1h-1zM11 9h1v1h-1zM2 10h1v1h-1zM10 10h1v1h-1zM3 11h7v1h-7z\"/><path fill=\"#e8473a\" d=\"M5 1h1v1h-1zM5 2h2v1h-2zM4 3h2v1h-2zM7 3h1v1h-1zM3 4h2v1h-2zM7 4h1v1h-1zM3 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM2 6h2v1h-2zM8 6h3v1h-3zM2 7h1v1h-1zM9 7h2v1h-2zM2 8h1v1h-1zM10 8h1v1h-1zM2 9h2v1h-2zM9 9h2v1h-2zM3 10h7v1h-7z\"/><path fill=\"#f39a2b\" d=\"M6 3h1v1h-1zM5 4h2v1h-2zM4 5h4v1h-4zM4 6h1v1h-1zM7 6h1v1h-1zM3 7h1v1h-1zM8 7h1v1h-1zM3 8h1v1h-1zM9 8h1v1h-1zM4 9h1v1h-1zM8 9h1v1h-1z\"/><path fill=\"#ffd23f\" d=\"M5 6h2v1h-2zM4 7h4v1h-4zM4 8h5v1h-5zM5 9h3v1h-3z\"/></svg>"}, "gota": {"n": "Gota", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M5 0h2v1h-2zM4 1h1v1h-1zM7 1h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM3 3h1v1h-1zM8 3h1v1h-1zM2 4h1v1h-1zM9 4h1v1h-1zM2 5h1v1h-1zM9 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM2 9h1v1h-1zM9 9h1v1h-1zM3 10h1v1h-1zM8 10h1v1h-1zM4 11h4v1h-4z\"/><path fill=\"#3d8be0\" d=\"M5 1h2v1h-2zM5 2h2v1h-2zM4 3h4v1h-4zM3 4h6v1h-6zM3 5h1v1h-1zM5 5h4v1h-4zM2 6h1v1h-1zM4 6h6v1h-6zM2 7h1v1h-1zM4 7h6v1h-6zM2 8h8v1h-8zM3 9h6v1h-6zM4 10h4v1h-4z\"/><path fill=\"#ffffff\" d=\"M4 5h1v1h-1zM3 6h1v1h-1zM3 7h1v1h-1z\"/></svg>"}, "folha": {"n": "Folha", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M8 0h3v1h-3zM6 1h2v1h-2zM10 1h1v1h-1zM4 2h2v1h-2zM10 2h1v1h-1zM3 3h1v1h-1zM10 3h1v1h-1zM2 4h1v1h-1zM10 4h1v1h-1zM2 5h1v1h-1zM10 5h1v1h-1zM1 6h1v1h-1zM9 6h1v1h-1zM1 7h1v1h-1zM8 7h1v1h-1zM1 8h1v1h-1zM6 8h2v1h-2zM1 9h1v1h-1zM3 9h3v1h-3zM0 10h1v1h-1zM2 10h1v1h-1zM0 11h2v1h-2z\"/><path fill=\"#3fae4a\" d=\"M8 1h2v1h-2zM6 2h4v1h-4zM4 3h4v1h-4zM9 3h1v1h-1zM3 4h4v1h-4zM8 4h2v1h-2zM3 5h3v1h-3zM7 5h3v1h-3zM2 6h3v1h-3zM6 6h3v1h-3zM2 7h2v1h-2zM5 7h3v1h-3zM2 8h1v1h-1zM4 8h2v1h-2z\"/><path fill=\"#9be36e\" d=\"M8 3h1v1h-1zM7 4h1v1h-1zM6 5h1v1h-1zM5 6h1v1h-1zM4 7h1v1h-1zM3 8h1v1h-1zM2 9h1v1h-1zM1 10h1v1h-1z\"/></svg>"}, "raio": {"n": "Raio", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M6 0h4v1h-4zM5 1h1v1h-1zM9 1h1v1h-1zM4 2h1v1h-1zM8 2h1v1h-1zM3 3h1v1h-1zM7 3h1v1h-1zM2 4h1v1h-1zM6 4h4v1h-4zM1 5h1v1h-1zM9 5h1v1h-1zM1 6h4v1h-4zM8 6h1v1h-1zM4 7h1v1h-1zM7 7h1v1h-1zM3 8h1v1h-1zM6 8h1v1h-1zM3 9h1v1h-1zM5 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM2 11h2v1h-2z\"/><path fill=\"#ffd23f\" d=\"M6 1h3v1h-3zM5 2h3v1h-3zM4 3h3v1h-3zM3 4h3v1h-3zM2 5h7v1h-7zM5 6h3v1h-3zM5 7h2v1h-2zM4 8h2v1h-2zM4 9h1v1h-1zM3 10h1v1h-1z\"/></svg>"}, "estrela": {"n": "Estrela", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M5 0h2v1h-2zM5 1h1v1h-1zM7 1h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM0 3h5v1h-5zM7 3h5v1h-5zM0 4h1v1h-1zM11 4h1v1h-1zM1 5h1v1h-1zM10 5h1v1h-1zM2 6h1v1h-1zM9 6h1v1h-1zM2 7h1v1h-1zM9 7h1v1h-1zM1 8h1v1h-1zM5 8h2v1h-2zM10 8h1v1h-1zM1 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM10 9h1v1h-1zM0 10h1v1h-1zM2 10h2v1h-2zM8 10h2v1h-2zM11 10h1v1h-1zM0 11h2v1h-2zM10 11h2v1h-2z\"/><path fill=\"#ffd23f\" d=\"M6 1h1v1h-1zM5 2h2v1h-2zM5 3h2v1h-2zM1 4h10v1h-10zM2 5h8v1h-8zM3 6h6v1h-6zM3 7h6v1h-6zM2 8h3v1h-3zM7 8h3v1h-3zM2 9h2v1h-2zM8 9h2v1h-2zM1 10h1v1h-1zM10 10h1v1h-1z\"/></svg>"}, "coracao": {"n": "Coração", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M1 1h3v1h-3zM8 1h3v1h-3zM0 2h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM11 2h1v1h-1zM0 3h1v1h-1zM5 3h2v1h-2zM11 3h1v1h-1zM0 4h1v1h-1zM11 4h1v1h-1zM0 5h1v1h-1zM11 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM2 7h1v1h-1zM9 7h1v1h-1zM3 8h1v1h-1zM8 8h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM5 10h2v1h-2z\"/><path fill=\"#ffffff\" d=\"M2 3h1v1h-1zM2 4h1v1h-1z\"/><path fill=\"#f472a8\" d=\"M1 2h3v1h-3zM8 2h3v1h-3zM1 3h1v1h-1zM3 3h2v1h-2zM7 3h4v1h-4zM1 4h1v1h-1zM3 4h8v1h-8zM1 5h10v1h-10zM2 6h8v1h-8zM3 7h6v1h-6zM4 8h4v1h-4zM5 9h2v1h-2z\"/></svg>"}, "lua": {"n": "Lua", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M4 0h4v1h-4zM2 1h2v1h-2zM7 1h1v1h-1zM1 2h1v1h-1zM6 2h1v1h-1zM1 3h1v1h-1zM5 3h1v1h-1zM0 4h1v1h-1zM5 4h1v1h-1zM0 5h1v1h-1zM4 5h1v1h-1zM0 6h1v1h-1zM4 6h1v1h-1zM0 7h1v1h-1zM5 7h1v1h-1zM1 8h1v1h-1zM6 8h1v1h-1zM10 8h1v1h-1zM1 9h1v1h-1zM7 9h4v1h-4zM2 10h2v1h-2zM9 10h1v1h-1zM4 11h5v1h-5z\"/><path fill=\"#fff0a8\" d=\"M4 1h3v1h-3zM2 2h4v1h-4zM2 3h3v1h-3zM1 4h4v1h-4zM1 5h3v1h-3zM1 6h3v1h-3zM1 7h4v1h-4zM2 8h4v1h-4zM2 9h5v1h-5zM4 10h5v1h-5z\"/></svg>"}, "cristal": {"n": "Cristal", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M3 0h6v1h-6zM2 1h1v1h-1zM9 1h1v1h-1zM1 2h1v1h-1zM10 2h1v1h-1zM0 3h12v1h-12zM0 4h1v1h-1zM11 4h1v1h-1zM1 5h1v1h-1zM10 5h1v1h-1zM2 6h1v1h-1zM9 6h1v1h-1zM3 7h1v1h-1zM8 7h1v1h-1zM4 8h1v1h-1zM7 8h1v1h-1zM5 9h2v1h-2z\"/><path fill=\"#8e5bd6\" d=\"M5 1h2v1h-2zM3 2h5v1h-5zM9 2h1v1h-1zM1 4h1v1h-1zM3 4h6v1h-6zM10 4h1v1h-1zM2 5h1v1h-1zM4 5h4v1h-4zM9 5h1v1h-1zM3 6h1v1h-1zM5 6h2v1h-2zM8 6h1v1h-1zM4 7h1v1h-1zM7 7h1v1h-1zM5 8h2v1h-2z\"/><path fill=\"#c7a6ff\" d=\"M3 1h2v1h-2zM7 1h2v1h-2zM2 2h1v1h-1zM8 2h1v1h-1zM2 4h1v1h-1zM9 4h1v1h-1zM3 5h1v1h-1zM8 5h1v1h-1zM4 6h1v1h-1zM7 6h1v1h-1zM5 7h2v1h-2z\"/></svg>"}, "ovo": {"n": "Ovo", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M4 0h4v1h-4zM3 1h1v1h-1zM8 1h1v1h-1zM2 2h1v1h-1zM9 2h1v1h-1zM2 3h1v1h-1zM9 3h1v1h-1zM1 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM10 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM0 7h1v1h-1zM11 7h1v1h-1zM0 8h1v1h-1zM11 8h1v1h-1zM1 9h1v1h-1zM10 9h1v1h-1zM2 10h1v1h-1zM9 10h1v1h-1zM3 11h6v1h-6z\"/><path fill=\"#3fae4a\" d=\"M5 2h2v1h-2zM4 3h3v1h-3zM5 4h1v1h-1zM8 5h1v1h-1zM3 6h2v1h-2zM8 6h2v1h-2zM3 7h2v1h-2zM7 8h1v1h-1zM7 9h2v1h-2z\"/><path fill=\"#fff6df\" d=\"M4 1h4v1h-4zM3 2h2v1h-2zM7 2h2v1h-2zM3 3h1v1h-1zM7 3h2v1h-2zM2 4h3v1h-3zM6 4h4v1h-4zM2 5h6v1h-6zM9 5h1v1h-1zM2 6h1v1h-1zM5 6h3v1h-3zM1 7h2v1h-2zM5 7h6v1h-6zM1 8h6v1h-6zM8 8h3v1h-3zM2 9h5v1h-5zM9 9h1v1h-1zM3 10h6v1h-6z\"/></svg>"}, "gelo": {"n": "Gelo", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M5 0h2v1h-2zM3 1h1v1h-1zM5 1h1v1h-1zM8 1h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM1 3h1v1h-1zM4 3h1v1h-1zM7 3h1v1h-1zM10 3h1v1h-1zM1 4h1v1h-1zM3 4h2v1h-2zM7 4h2v1h-2zM10 4h1v1h-1zM0 5h2v1h-2zM10 5h2v1h-2zM0 6h2v1h-2zM10 6h2v1h-2zM1 7h1v1h-1zM3 7h2v1h-2zM7 7h2v1h-2zM10 7h1v1h-1zM1 8h1v1h-1zM4 8h1v1h-1zM7 8h1v1h-1zM10 8h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM3 10h1v1h-1zM5 10h1v1h-1zM8 10h1v1h-1zM5 11h2v1h-2z\"/><path fill=\"#8fe3ff\" d=\"M6 1h1v1h-1zM5 2h2v1h-2zM5 3h2v1h-2zM2 4h1v1h-1zM5 4h2v1h-2zM9 4h1v1h-1zM2 5h8v1h-8zM2 6h8v1h-8zM2 7h1v1h-1zM5 7h2v1h-2zM9 7h1v1h-1zM5 8h2v1h-2zM5 9h2v1h-2zM6 10h1v1h-1z\"/></svg>"}, "fruta": {"n": "Fruta", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M4 0h2v1h-2zM7 0h2v1h-2zM3 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM4 2h2v1h-2zM7 2h2v1h-2zM3 3h2v1h-2zM7 3h2v1h-2zM2 4h1v1h-1zM9 4h1v1h-1zM1 5h1v1h-1zM10 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM2 9h1v1h-1zM9 9h1v1h-1zM3 10h1v1h-1zM8 10h1v1h-1zM4 11h4v1h-4z\"/><path fill=\"#e8473a\" d=\"M5 3h2v1h-2zM3 4h6v1h-6zM2 5h1v1h-1zM4 5h6v1h-6zM2 6h1v1h-1zM4 6h6v1h-6zM2 7h8v1h-8zM2 8h8v1h-8zM3 9h6v1h-6zM4 10h4v1h-4z\"/><path fill=\"#ffffff\" d=\"M3 5h1v1h-1zM3 6h1v1h-1z\"/><path fill=\"#3fae4a\" d=\"M4 1h2v1h-2zM7 1h2v1h-2zM6 2h1v1h-1z\"/></svg>"}, "medalha": {"n": "Medalha", "s": "<svg viewBox=\"0 0 12 12\" shape-rendering=\"crispEdges\" aria-hidden=\"true\"><path fill=\"#1b1b1b\" d=\"M2 0h2v1h-2zM8 0h2v1h-2zM2 1h1v1h-1zM4 1h1v1h-1zM7 1h1v1h-1zM9 1h1v1h-1zM3 2h1v1h-1zM5 2h2v1h-2zM8 2h1v1h-1zM4 3h1v1h-1zM7 3h1v1h-1zM3 4h6v1h-6zM2 5h1v1h-1zM9 5h1v1h-1zM1 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM10 7h1v1h-1zM1 8h1v1h-1zM10 8h1v1h-1zM1 9h1v1h-1zM10 9h1v1h-1zM2 10h1v1h-1zM9 10h1v1h-1zM3 11h6v1h-6z\"/><path fill=\"#e8473a\" d=\"M3 1h1v1h-1zM8 1h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM5 3h2v1h-2z\"/><path fill=\"#f39a2b\" d=\"M4 6h4v1h-4zM3 7h1v1h-1zM8 7h1v1h-1zM3 8h1v1h-1zM8 8h1v1h-1zM4 9h4v1h-4z\"/><path fill=\"#ffd23f\" d=\"M3 5h6v1h-6zM2 6h2v1h-2zM8 6h2v1h-2zM2 7h1v1h-1zM4 7h4v1h-4zM9 7h1v1h-1zM2 8h1v1h-1zM4 8h4v1h-4zM9 8h1v1h-1zM2 9h2v1h-2zM8 9h2v1h-2zM3 10h6v1h-6z\"/></svg>"}};
+const ARROW_L = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 2h2v1h-2zM5 3h3v1h-3zM4 4h4v1h-4zM3 5h5v1h-5zM2 6h14v1h-14zM1 7h15v1h-15zM1 8h15v1h-15zM2 9h14v1h-14zM3 10h5v1h-5zM4 11h4v1h-4zM5 12h3v1h-3zM6 13h2v1h-2z"/></svg>';
+const ARROW_R = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M8 2h2v1h-2zM8 3h3v1h-3zM8 4h4v1h-4zM8 5h5v1h-5zM0 6h14v1h-14zM0 7h15v1h-15zM0 8h15v1h-15zM0 9h14v1h-14zM8 10h5v1h-5zM8 11h4v1h-4zM8 12h3v1h-3zM8 13h2v1h-2z"/></svg>';
+/* ======================= Coleção: binder 3×3 ======================= */
+// Chaves no localStorage: 'colecao' = [{id, ts, img}] (mais nova primeiro) e
+// 'binder' = {name, color, stickers:[{k,x,y}], slots:[ts...]} (até 90 cartas, ordem das páginas).
+const BINDER_PAGES = 10, PER_PAGE = 9, BINDER_MAX = BINDER_PAGES * PER_PAGE, MAX_STICKERS = 16;
+const COVER_COLORS = [['Vermelho', '#d8453a'], ['Azul', '#2f6fc4'], ['Verde', '#2f9a52'], ['Amarelo', '#e9b824'], ['Roxo', '#7a4fc4'], ['Rosa', '#e46fa6'], ['Preto', '#2a2a33'], ['Creme', '#e8dbb0']];
+const colChanged = () => window.dispatchEvent(new CustomEvent('cartascan:colecao', { detail: { source: 'app' } }));
+function getBinder() {
+  const col = store.get('colecao', []);
+  let b = store.get('binder', null), dirty = false;
+  if (!b || typeof b !== 'object') { b = { name: 'Meu binder', color: COVER_COLORS[0][1], stickers: [], slots: col.slice().reverse().slice(0, BINDER_MAX).map(x => x.ts) }; dirty = true; }
+  b.name = typeof b.name === 'string' ? b.name.slice(0, 30) : 'Meu binder';
+  if (!/^#[0-9a-f]{6}$/i.test(b.color || '')) b.color = COVER_COLORS[0][1];
+  b.stickers = (Array.isArray(b.stickers) ? b.stickers : []).filter(s => s && STICKERS[s.k]).slice(0, MAX_STICKERS);
+  const valid = new Set(col.map(x => x.ts)), seen = new Set();
+  const slots = (Array.isArray(b.slots) ? b.slots : []).filter(t => valid.has(t) && !seen.has(t) && seen.add(t)).slice(0, BINDER_MAX);
+  if (!Array.isArray(b.slots) || slots.length !== b.slots.length) { b.slots = slots; dirty = true; }
+  if (dirty) store.set('binder', b);
+  return b;
+}
+function saveBinder(b) { const ok = store.set('binder', b); colChanged(); return ok; }
+function binderAdd(ts) { const b = getBinder(); if (b.slots.includes(ts)) return true; if (b.slots.length >= BINDER_MAX) return false; b.slots.push(ts); saveBinder(b); return true; }
+function binderRemove(ts) { const b = getBinder(); b.slots = b.slots.filter(t => t !== ts); saveBinder(b); }
+const BV = { view: 'binder', open: false, edit: false, page: 0, sel: -1, stSel: -1 };
+
+// Sprite da Pokédex (conteúdo da base aberta) para cartas salvas sem foto
+function dexSprite(c, size) {
+  const n = c && c.dex; if (!n || !DB.dex[String(n)]) return el('span', { class: 'nm', text: c ? c.name : '' });
+  const z = size / 96, col = (n - 1) % 32, row = Math.floor((n - 1) / 32);
+  return el('span', { class: 'spr', role: 'img', 'aria-label': c.name, style: `width:${size}px;height:${size}px;background-image:url(data/sprites.png);background-size:${3072 * z}px ${3168 * z}px;background-position:${-col * size}px ${-row * size}px` });
+}
+function collItems() {
+  const col = store.get('colecao', []); const byId = new Map(DB.cards.map((c, i) => [c[0], i]));
+  return col.map(x => ({ ...x, c: byId.has(x.id) ? cardObj(byId.get(x.id)) : null })).filter(x => x.c);
+}
+
+function renderColl() {
+  if (!DB.cards.length) return;
+  $('#cv-binder').hidden = BV.view !== 'binder'; $('#cv-all').hidden = BV.view !== 'all';
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.cv === BV.view)));
+  const items = collItems(), b = getBinder();
+  renderAll(items, b); renderBinder(items, b);
+}
+
+function renderAll(items, b) {
+  const counts = {}; items.forEach(x => counts[x.id] = (counts[x.id] || 0) + 1);
+  const sets = new Set(items.map(x => x.c.set.id)), inB = new Set(b.slots);
+  $('#coll-sum').replaceChildren(...[[items.length, 'cartas'], [b.slots.length + '/' + BINDER_MAX, 'no binder'], [sets.size, 'coleções']].map(([n, l]) => el('div', {}, el('b', { text: String(n) }), el('span', { text: l }))));
+  const L = $('#coll-list'); L.replaceChildren();
+  if (!items.length) { L.append(el('div', { class: 'panel' }, el('p', { class: 'muted', text: 'Nenhuma carta salva ainda. Escaneie uma carta e toque em “Salvar na coleção”.' }))); return; }
+  const full = b.slots.length >= BINDER_MAX;
+  items.forEach(x => {
+    const del = el('button', { class: 'x', type: 'button', 'aria-label': `Remover ${x.c.name} da coleção`, text: '×' });
+    del.onclick = () => { const all = store.get('colecao', []); const j = all.findIndex(y => y.ts === x.ts); if (j >= 0) all.splice(j, 1); store.set('colecao', all); getBinder(); colChanged(); renderColl(); };
+    const on = inB.has(x.ts);
+    const bd = el('button', { class: `bd${on ? ' on' : ''}`, type: 'button', 'aria-pressed': String(on), text: on ? '✓ Binder' : full ? 'Binder cheio' : '+ Binder' });
+    if (!on && full) bd.disabled = true;
+    bd.onclick = () => { if (on) binderRemove(x.ts); else binderAdd(x.ts); renderColl(); };
+    L.append(el('div', { class: 'citem' }, x.img ? el('img', { src: x.img, alt: '' }) : el('div', { class: 'ph' }, dexSprite(x.c, 72)),
+      el('div', { style: 'min-width:0' }, el('b', { text: x.c.name }), counts[x.id] > 1 ? el('span', { class: 'chip', style: 'margin-left:6px', text: `×${counts[x.id]}` }) : null, el('div', { class: 'small muted mono', text: `${numLabel(x.c.number, x.c.set)} · ${x.c.set.name}` })),
+      bd, del));
+  });
+}
+
+function renderCover(b) {
+  const cv = $('#bd-cover'); cv.style.setProperty('--cover', b.color); cv.classList.toggle('editing', BV.edit);
+  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', `Capa do binder ${b.name || 'sem nome'}, ${b.stickers.length} adesivos`);
+  $('#bd-plate').textContent = b.name || 'Meu binder';
+  const host = $('#bd-stickers'); host.replaceChildren();
+  b.stickers.forEach((s, i) => {
+    const st = el('span', { class: `sticker${BV.edit && BV.stSel === i ? ' sel' : ''}`, style: `left:${s.x}%;top:${s.y}%`, title: STICKERS[s.k].n });
+    st.innerHTML = STICKERS[s.k].s;
+    if (BV.edit) dragSticker(st, i);
+    host.append(st);
+  });
+  $('#bd-st-del').disabled = !(BV.edit && BV.stSel >= 0 && BV.stSel < b.stickers.length);
+  $('#bd-st-clear').disabled = !b.stickers.length;
+  document.querySelectorAll('#bd-palette button').forEach(x => x.disabled = b.stickers.length >= MAX_STICKERS);
+  $('#bd-st-hint').textContent = b.stickers.length >= MAX_STICKERS ? `A capa já tem ${MAX_STICKERS} adesivos, o máximo. Tire um para colar outro.` : 'Toque num adesivo para colar na capa. Depois arraste para mudar de lugar.';
+}
+function dragSticker(node, i) {
+  node.onpointerdown = e => {
+    e.preventDefault(); node.setPointerCapture(e.pointerId);
+    const r = $('#bd-cover').getBoundingClientRect(), b = getBinder(), s = b.stickers[i]; if (!s) return;
+    const ox = e.clientX - (r.left + s.x / 100 * r.width), oy = e.clientY - (r.top + s.y / 100 * r.height); let moved = false;
+    BV.stSel = i; document.querySelectorAll('#bd-stickers .sticker').forEach((x, k) => x.classList.toggle('sel', k === i)); $('#bd-st-del').disabled = false;
+    node.onpointermove = ev => { moved = true; s.x = Math.max(-4, Math.min(84, (ev.clientX - ox - r.left) / r.width * 100)); s.y = Math.max(-4, Math.min(80, (ev.clientY - oy - r.top) / r.height * 100)); node.style.left = s.x + '%'; node.style.top = s.y + '%'; };
+    node.onpointerup = node.onpointercancel = () => { node.onpointermove = null; if (moved) { s.x = Math.round(s.x * 10) / 10; s.y = Math.round(s.y * 10) / 10; saveBinder(b); } };
+  };
+}
+
+function renderBinder(items, b) {
+  const byTs = new Map(items.map(x => [x.ts, x]));
+  $('#bd-count').textContent = `${b.slots.length} de ${BINDER_MAX} espaços usados · ${BINDER_PAGES} páginas de 3×3`;
+  $('#bd-cover-actions').hidden = BV.edit; $('#bd-editor').hidden = !BV.edit;
+  $('#bd-cover-view').hidden = BV.open; $('#bd-pages').hidden = !BV.open;
+  renderCover(b);
+  if (BV.edit) {
+    if (document.activeElement !== $('#bd-name')) $('#bd-name').value = b.name;
+    document.querySelectorAll('#bd-colors .swatch').forEach(s => s.setAttribute('aria-checked', String(s.dataset.c.toLowerCase() === b.color.toLowerCase())));
+  }
+  if (!BV.open) return;
+  BV.page = Math.max(0, Math.min(BINDER_PAGES - 1, BV.page));
+  $('#bd-pglabel').textContent = `Página ${BV.page + 1} de ${BINDER_PAGES}`;
+  const G = $('#bd-grid'); G.replaceChildren();
+  for (let k = 0; k < PER_PAGE; k++) {
+    const gi = BV.page * PER_PAGE + k, ts = b.slots[gi], x = ts != null ? byTs.get(ts) : null;
+    if (!x) { G.append(el('div', { class: 'pocket empty', 'aria-label': `Espaço ${k + 1} vazio` })); continue; }
+    const p = el('button', { class: `pocket${BV.sel === gi ? ' sel' : ''}`, type: 'button', 'aria-label': `${x.c.name}, ${numLabel(x.c.number, x.c.set)}`, 'aria-pressed': String(BV.sel === gi) },
+      x.img ? el('img', { src: x.img, alt: '' }) : el('span', { class: 'nosnap' }, dexSprite(x.c, 64), el('span', { class: 'nm', text: x.c.name })));
+    p.onclick = () => { BV.sel = BV.sel === gi ? -1 : gi; renderColl(); };
+    G.append(p);
+  }
+  const D = $('#bd-dots'); D.replaceChildren();
+  for (let pg = 0; pg < BINDER_PAGES; pg++) {
+    const has = b.slots.length > pg * PER_PAGE;
+    const d = el('button', { type: 'button', class: has ? 'has' : '', 'aria-label': `Ir para a página ${pg + 1}${has ? '' : ' (vazia)'}`, 'aria-current': String(pg === BV.page) });
+    d.onclick = () => goPage(pg); D.append(d);
+  }
+  $('#bd-prev').disabled = BV.page === 0; $('#bd-next').disabled = BV.page === BINDER_PAGES - 1;
+  const T = $('#bd-detail'); T.replaceChildren();
+  if (BV.sel >= 0 && byTs.get(b.slots[BV.sel])) {
+    const x = byTs.get(b.slots[BV.sel]), gi = BV.sel;
+    const mv = d => { const j = gi + d; if (j < 0 || j >= b.slots.length) return; [b.slots[gi], b.slots[j]] = [b.slots[j], b.slots[gi]]; saveBinder(b); BV.sel = j; BV.page = Math.floor(j / PER_PAGE); renderColl(); };
+    const prev = el('button', { class: 'btn', type: 'button', text: '◂ Mover' }), next = el('button', { class: 'btn', type: 'button', text: 'Mover ▸' }), out = el('button', { class: 'btn', type: 'button', text: 'Tirar do binder' });
+    prev.disabled = gi === 0; next.disabled = gi >= b.slots.length - 1;
+    prev.onclick = () => mv(-1); next.onclick = () => mv(1); out.onclick = () => { binderRemove(b.slots[gi]); BV.sel = -1; renderColl(); };
+    T.append(el('div', { class: 'who', text: x.c.name }), el('div', { class: 'small muted mono', text: `${numLabel(x.c.number, x.c.set)} · ${x.c.set.name} · espaço ${gi % PER_PAGE + 1} da página ${Math.floor(gi / PER_PAGE) + 1}` }), el('div', { class: 'row' }, prev, next, out));
+  } else if (!b.slots.length) T.append(el('p', { class: 'small muted', text: 'O binder está vazio. Salve cartas pelo scanner ou toque em “+ Binder” em “Todas as cartas”.' }));
+}
+function goPage(pg) { if (pg < 0 || pg >= BINDER_PAGES || pg === BV.page) return; const dx = pg > BV.page ? '24px' : '-24px'; BV.page = pg; BV.sel = -1; renderColl(); const g = $('#bd-grid'); g.style.setProperty('--dx', dx); g.classList.remove('turn'); void g.offsetWidth; g.classList.add('turn'); }
+
+(function setupBinder() {
+  document.querySelectorAll('.seg button').forEach(x => x.onclick = () => { BV.view = x.dataset.cv; renderColl(); });
+  $('#bd-prev').innerHTML = ARROW_L; $('#bd-next').innerHTML = ARROW_R;
+  $('#bd-open').onclick = () => { BV.open = true; BV.edit = false; BV.sel = -1; renderColl(); $('#bd-pages').scrollIntoView({ block: 'start' }); };
+  $('#bd-close').onclick = () => { BV.open = false; BV.sel = -1; renderColl(); };
+  $('#bd-edit').onclick = () => { BV.edit = true; BV.stSel = -1; renderColl(); };
+  $('#bd-done').onclick = () => { BV.edit = false; BV.stSel = -1; renderColl(); window.scrollTo({ top: 0 }); };
+  $('#bd-prev').onclick = () => goPage(BV.page - 1); $('#bd-next').onclick = () => goPage(BV.page + 1);
+  let sx = null; const pg = $('#bd-page');
+  pg.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  pg.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60) goPage(BV.page + (dx < 0 ? 1 : -1)); });
+  $('#bd-name').oninput = e => { const b = getBinder(); b.name = e.target.value.slice(0, 30); saveBinder(b); $('#bd-plate').textContent = b.name || 'Meu binder'; };
+  const C = $('#bd-colors');
+  COVER_COLORS.forEach(([n, c]) => { const s = el('button', { class: 'swatch', type: 'button', role: 'radio', 'aria-label': n, 'aria-checked': 'false', 'data-c': c, style: `background:${c}` }); s.onclick = () => { const b = getBinder(); b.color = c; saveBinder(b); renderColl(); }; C.append(s); });
+  const P = $('#bd-palette');
+  Object.entries(STICKERS).forEach(([k, v]) => { const s = el('button', { type: 'button', 'aria-label': `Colar adesivo ${v.n}`, title: v.n }); s.innerHTML = v.s; s.onclick = () => { const b = getBinder(); if (b.stickers.length >= MAX_STICKERS) return; b.stickers.push({ k, x: Math.round(18 + Math.random() * 58), y: Math.round(34 + Math.random() * 40) }); saveBinder(b); BV.stSel = b.stickers.length - 1; renderColl(); }; P.append(s); });
+  $('#bd-st-del').onclick = () => { const b = getBinder(); if (BV.stSel >= 0) b.stickers.splice(BV.stSel, 1); BV.stSel = -1; saveBinder(b); renderColl(); };
+  $('#bd-st-clear').onclick = () => { const b = getBinder(); b.stickers = []; BV.stSel = -1; saveBinder(b); renderColl(); };
+  window.addEventListener('cartascan:colecao', e => { if (e.detail && e.detail.source === 'app') return; renderColl(); });
+})();
+
+/* ======================= Carta de exemplo (desenho sintético) ======================= */
+function sampleCard() {
+  const W = 630, H = 880, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  const rr = (x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };
+  rr(0, 0, W, H, 28); g.fillStyle = '#f3d23e'; g.fill();
+  rr(22, 22, W - 44, H - 44, 14); const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#fbf3c4'); bg.addColorStop(1, '#efe08a'); g.fillStyle = bg; g.fill();
+  g.fillStyle = '#222'; g.font = 'bold 18px Arial, sans-serif'; g.fillText('BÁSICO', 44, 62);
+  g.font = 'bold 46px Arial, sans-serif'; g.fillText('Pikachu', 128, 72);
+  g.font = 'bold 20px Arial, sans-serif'; g.fillText('PS', 452, 70); g.font = 'bold 40px Arial, sans-serif'; g.fillText('60', 482, 72);
+  g.beginPath(); g.arc(568, 58, 20, 0, 7); g.fillStyle = '#d9a400'; g.fill();
+  rr(50, 96, W - 100, 360, 6); const art = g.createLinearGradient(50, 96, W - 50, 456); art.addColorStop(0, '#7fc7e8'); art.addColorStop(1, '#f6e27a'); g.fillStyle = art; g.fill(); g.lineWidth = 6; g.strokeStyle = '#c9a83a'; g.stroke();
+  g.fillStyle = '#ffd400'; g.strokeStyle = '#7a5a00'; g.lineWidth = 5; g.beginPath(); [[330, 130], [250, 290], [310, 290], [270, 420], [390, 240], [330, 240], [380, 130]].forEach(([x, y], i) => g[i ? 'lineTo' : 'moveTo'](x, y)); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = '#5a4a10'; g.font = 'italic 15px Arial, sans-serif'; g.fillText('AMOSTRA SINTÉTICA · NÃO É UMA CARTA REAL', 120, 480);
+  const atk = (y, nm, dm, n) => { for (let i = 0; i < n; i++) { g.beginPath(); g.arc(70 + i * 30, y - 8, 12, 0, 7); g.fillStyle = i < n - (n > 2 ? 1 : 0) ? '#d9a400' : '#cfcfcf'; g.fill(); } g.fillStyle = '#222'; g.font = 'bold 28px Arial, sans-serif'; g.fillText(nm, 170, y); if (dm) g.fillText(dm, 520, y); };
+  atk(560, 'Carga', '', 1); g.font = '17px Arial, sans-serif'; g.fillStyle = '#333'; g.fillText('Procure no seu baralho por 1 Energia básica.', 60, 595);
+  atk(668, 'Soco Pika', '50', 3);
+  g.strokeStyle = '#b79a2a'; g.lineWidth = 2; g.beginPath(); g.moveTo(50, 740); g.lineTo(W - 50, 740); g.stroke();
+  g.font = '16px Arial, sans-serif'; g.fillStyle = '#333'; g.fillText('fraqueza  ×2        resistência          recuo', 60, 772);
+  g.fillStyle = '#222'; rr(40, 826, 24, 26, 4); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 18px Arial, sans-serif'; g.fillText('G', 45, 846);
+  g.fillStyle = '#222'; g.font = 'bold 21px Arial, sans-serif'; g.fillText('025/165', 110, 847); g.font = '15px Arial, sans-serif'; g.fillText('Ilus. Exemplo', 420, 846);
+  // cena: mesa + carta em perspectiva
+  const S = document.createElement('canvas'); S.width = 1280; S.height = 960; const s = S.getContext('2d');
+  const wood = s.createLinearGradient(0, 0, 1280, 960); wood.addColorStop(0, '#3c2a1e'); wood.addColorStop(1, '#5b412c'); s.fillStyle = wood; s.fillRect(0, 0, 1280, 960);
+  for (let i = 0; i < 90; i++) { s.strokeStyle = `rgba(0,0,0,${.05 + Math.random() * .08})`; s.lineWidth = 1 + Math.random() * 3; s.beginPath(); const y = Math.random() * 960; s.moveTo(0, y); s.bezierCurveTo(400, y + 20 * Math.sin(i), 800, y - 20, 1280, y + 10); s.stroke(); }
+  const scene = s.getImageData(0, 0, 1280, 960), cardData = g.getImageData(0, 0, W, H);
+  const Q = [[452, 118], [912, 162], [880, 850], [388, 812]];
+  const Hm = homography(Q, [[0, 0], [W, 0], [W, H], [0, H]]);
+  for (let y = 100; y < 870; y++) for (let x = 370; x < 930; x++) { const [u, v] = applyH(Hm, x, y); if (u < 0 || v < 0 || u >= W - 1 || v >= H - 1) continue; const i = ((v | 0) * W + (u | 0)) * 4; if (cardData.data[i + 3] < 128) continue; const o = (y * 1280 + x) * 4; const shade = .92 + .08 * (x - 370) / 560; for (let k = 0; k < 3; k++) scene.data[o + k] = cardData.data[i + k] * shade; }
+  s.putImageData(scene, 0, 0);
+  return S;
+}
+
+/* ======================= Eventos ======================= */
+const capmsg = (t, err) => { const m = $('#capmsg'); m.textContent = t; m.classList.toggle('err', !!err); };
+let pickT = null, pickLeft = false, pickAt = 0;
+async function handleBlob(f) {
+  clearTimeout(pickT);
+  diag('foto recebida', f ? `${f.type || 'tipo?'} · ${(f.size / 1048576).toFixed(2)} MB` : 'vazio');
+  if (!f) { capmsg('Nenhuma foto recebida. Se o seletor não abriu, abra este link no navegador do celular (Chrome ou Safari).', true); return; }
+  capmsg(`Foto recebida (${(f.size / 1048576).toFixed(1)} MB). Processando…`);
+  $('#h-img').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try { const im = await loadImageFile(f); diag('imagem decodificada', `${im.width}×${im.height}`); await runPipeline(im, 'SUA FOTO'); capmsg('Foto processada. Veja o resultado abaixo.'); }
+  catch (e) { console.error(e); diag('ERRO ao abrir a foto', String(e && (e.message || e))); capmsg(`Não consegui abrir essa imagem (${f.type || 'formato desconhecido'}). Tente uma foto em JPG ou PNG.`, true); }
+}
+async function handleFile(input) { const f = input.files && input.files[0]; await handleBlob(f); input.value = ''; }
+for (const id of ['#in-camera', '#in-gallery']) {
+  const i = $(id);
+  i.addEventListener('change', () => handleFile(i));
+  i.addEventListener('cancel', () => {
+    clearTimeout(pickT); const fast = performance.now() - pickAt < 800 && !pickLeft;
+    diag(fast ? 'seletor cancelado na hora (o app bloqueou o seletor?)' : 'seletor fechado sem foto', id);
+    if (fast) capmsg('O seletor de fotos não abriu. Se você está no app do Claude, abra este link no Chrome ou no Safari do celular.', true); else capmsg('Nenhuma foto escolhida.');
+  });
+  i.addEventListener('click', () => {
+    diag('toque no botão', id === '#in-camera' ? 'câmera' : 'galeria'); pickLeft = false; clearTimeout(pickT); pickAt = performance.now();
+    // Quando o seletor abre, a página perde o foco ou fica oculta. Se nada disso acontecer, o app bloqueou o seletor.
+    if (/(iPhone|iPad|iPod)/.test(navigator.userAgent)) return; // no iOS o seletor abre por cima da página sem tirar o foco
+    pickT = setTimeout(() => { if (!pickLeft && document.hasFocus() && document.visibilityState === 'visible') { diag('seletor NÃO abriu'); capmsg('O seletor de fotos não abriu. Se você está no app do Claude, abra este link no Chrome ou no Safari do celular.', true); } }, 2500);
+  });
+}
+window.addEventListener('blur', () => { pickLeft = true; diag('página perdeu o foco (seletor aberto?)'); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') pickLeft = true; diag('visibilidade', document.visibilityState); });
+if (IS_WEBVIEW) $('#webview-warn').hidden = false;
+$('#btn-diag-copy').onclick = async () => { const t = $('#diag-log').textContent; try { await navigator.clipboard.writeText(t); $('#btn-diag-copy').textContent = 'Copiado ✓'; } catch { const r = document.createRange(); r.selectNodeContents($('#diag-log')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('#btn-diag-copy').textContent = 'Texto selecionado: copie manualmente'; } };
+diag('página carregada');
+document.addEventListener('paste', e => { const it = [...(e.clipboardData?.items || [])].find(x => x.type.startsWith('image/')); if (it) { e.preventDefault(); handleBlob(it.getAsFile()); } });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { const f = [...(e.dataTransfer?.files || [])].find(x => x.type.startsWith('image/')); if (f) { e.preventDefault(); handleBlob(f); } });
+$('#btn-sample').onclick = () => runPipeline(sampleCard(), 'EXEMPLO SINTÉTICO');
+$('#form-manual').onsubmit = async e => {
+  e.preventDefault(); await DB.ready; const nm = $('#m-name').value.trim(), nb = $('#m-num').value.trim();
+  const id = identify(nm, nb, null, null);
+  await showResult(id, null); $('#result').scrollIntoView({ behavior: 'smooth' });
+};
+document.querySelectorAll('nav.tabs button').forEach(b => b.onclick = () => { document.querySelectorAll('nav.tabs button').forEach(x => x.setAttribute('aria-selected', x === b)); ['scan', 'coll', 'about'].forEach(v => $(`#view-${v}`).hidden = v !== b.dataset.view); if (b.dataset.view === 'coll') renderColl(); window.scrollTo(0, 0); });
+
+// Abre já com a carta de exemplo processada, para mostrar o pipeline funcionando.
+DB.ready.then(() => { renderColl(); }).catch(() => status('Não consegui carregar a base de cartas.', false));
+runPipeline(sampleCard(), 'EXEMPLO SINTÉTICO');
+</script>
+
+<script src="conta.js" defer></script>
+</body></html>
