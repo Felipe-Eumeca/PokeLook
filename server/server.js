@@ -98,12 +98,16 @@ function exigeLogin(req, res, next) {
 const pseudonimo = sub => crypto.createHmac('sha256', SEGREDO + ':uid').update(String(sub)).digest('hex').slice(0, 40);
 
 /* ---------------- Rotas ---------------- */
+// Em produção, só oferece login quando o banco está configurado (senão os dados ficariam só na memória).
+const LOGIN_ATIVO = !!GOOGLE_CLIENT_ID && (!PROD || db.tipo !== 'memoria');
 // Só para testes locais: serve o site junto com a API (SITE_DIR=../web)
 if (process.env.SITE_DIR) app.use(express.static(process.env.SITE_DIR));
 app.get('/', (req, res) => res.type('text').send('PokeLook API. Veja /api/saude.'));
-app.get('/api/saude', (req, res) => res.json({ ok: true, armazenamento: db.tipo, googleConfigurado: !!GOOGLE_CLIENT_ID }));
-// Em produção, só oferece login quando o banco está configurado (senão os dados ficariam só na memória).
-const LOGIN_ATIVO = !!GOOGLE_CLIENT_ID && (!PROD || db.tipo !== 'memoria');
+app.get('/api/saude', async (req, res) => {
+  let banco = 'nao-testado';
+  if (req.query.banco === '1') banco = await db.testar().then(() => 'ok', e => (console.error('saude', e.message), 'falhou'));
+  res.json({ ok: true, armazenamento: db.tipo, banco, googleConfigurado: !!GOOGLE_CLIENT_ID, loginAtivo: LOGIN_ATIVO });
+});
 app.get('/api/config', (req, res) => res.json({ googleClientId: LOGIN_ATIVO ? GOOGLE_CLIENT_ID : '', politicaVersao: POLITICA_VERSAO }));
 
 app.post('/api/auth/google', exigeCabecalho, async (req, res) => {

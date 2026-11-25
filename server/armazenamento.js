@@ -13,6 +13,7 @@ function memoria() {
   const m = new Map();
   return {
     tipo: 'memoria',
+    async testar() { return true; },
     async obter(uid) { return m.has(uid) ? structuredClone(m.get(uid)) : null; },
     async salvar(uid, dados) { m.set(uid, structuredClone(dados)); },
     async excluir(uid) { m.delete(uid); },
@@ -42,6 +43,7 @@ function parse(base, appId, masterKey) {
   };
   return {
     tipo: 'parse',
+    async testar() { await req('GET', `/classes/${CLASSE}?limit=0&count=1`); return true; },
     async obter(uid) { return paraDados(await buscar(uid)); },
     async salvar(uid, dados) {
       const corpo = { uid, criadoEm: dados.criadoEm, consentimento: dados.consentimento, colecao: dados.colecao, colecaoAtualizadaEm: dados.colecaoAtualizadaEm };
