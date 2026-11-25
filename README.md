@@ -7,10 +7,14 @@ App web (mobile-first) que identifica cartas de Pokémon TCG por foto, com visã
 | Pasta | O que é | Onde roda |
 |---|---|---|
 | `web/` | O app (HTML/CSS/JS estático), dados das cartas, `conta.js` (login e sincronização) e `privacidade.html` | Vercel |
-| `server/` | API Node/Express: login com Google, coleção do usuário, exportar/excluir conta, proxy de imagens das cartas | Back4app (Web App) |
+| `server/` | API Node/Express: login com Google, coleção do usuário, exportar/excluir conta, proxy de imagens das cartas | Vercel (função em `api/index.js`) |
+| `api/` | Ponte de 3 linhas que expõe o `server/` como função da Vercel | Vercel |
+| banco | Parse do Back4app (`pokelook-db`), acessado pela REST API | Back4app |
 | `scripts/` | `importar-prototipo.mjs`: copia o protótipo para `web/` e inclui o `conta.js` | sua máquina |
 
-O site chama sempre `/api/...` no próprio domínio; o `web/vercel.json` repassa essas chamadas para o servidor no Back4app. Assim o cookie de sessão é do próprio site (sem cookie de terceiros).
+O site chama sempre `/api/...` no próprio domínio; o `vercel.json` manda essas chamadas para a função `api/index.js`. Assim o cookie de sessão é do próprio site (sem cookie de terceiros). Na Vercel, o projeto usa a raiz do repositório, com `web/` como pasta publicada.
+
+**Por que a API não está no Back4app:** em 25/11/2026 o Back4app estava com a criação de Web Apps grátis em manutenção. O `server/` continua pronto para rodar lá (`npm start`, porta em `PORT`, health check `/api/saude`). Para mudar: crie o Web App com a pasta `server/`, copie as variáveis abaixo para ele e troque o `rewrites` do `vercel.json` pelo de `server/vercel-proxy-back4app.json` (com o endereço do Web App no lugar de `BACKEND_URL`).
 
 ## Privacidade (LGPD)
 
@@ -22,7 +26,7 @@ O site chama sempre `/api/...` no próprio domínio; o `web/vercel.json` repassa
 - Ao mudar a política, troque `POLITICA_VERSAO` em `server/server.js` e a versão em `web/privacidade.html`: o app pede novo aceite.
 - **Não troque o `SESSION_SECRET` depois de ter usuários**: o pseudônimo depende dele, e as contas existentes ficariam órfãs.
 
-## Variáveis do servidor (painel do Back4app)
+## Variáveis do servidor (Vercel › Settings › Environment Variables)
 
 Veja `server/.env.exemplo`. `GOOGLE_CLIENT_ID`, `SESSION_SECRET`, `PARSE_APP_ID` e `PARSE_MASTER_KEY` (do banco `pokelook-db`, em App Settings › Security & Keys). Sem as chaves do Parse, o servidor guarda tudo só na memória.
 

@@ -1,0 +1,12 @@
+{
+  "name": "pokelook",
+  "private": true,
+  "type": "module",
+  "description": "PokeLook: site estático em web/ e API em server/ (rodando como função da Vercel em api/)",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "cookie-parser": "1.4.7",
+    "express": "4.22.3",
+    "google-auth-library": "11.3.4"
+  }
+}
