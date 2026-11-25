@@ -377,7 +377,7 @@ ol.flow li::marker{font:400 20px var(--f-display);color:var(--ok)}
     <h2>Fontes de dados</h2>
     <dl class="kv small">
       <dt>Cartas</dt><dd>pokemon-tcg-data (PokemonTCG, GitHub) mais promos MEP e SVP do TCGdex, 178 coleções até <span id="last-set">—</span></dd>
-      <dt>Pokédex</dt><dd>PokeAPI (CSV oficial do projeto). Não há textos em português; a descrição aparece em espanhol.</dd>
+      <dt>Pokédex</dt><dd>PokeAPI (CSV oficial do projeto). A PokeAPI não tem textos em português, então a categoria e a descrição foram traduzidas para o português a partir do texto oficial em espanhol (tradução nossa, não oficial).</dd>
       <dt>Imagens</dt><dd>Sprites do PokeAPI/sprites</dd>
       <dt>OCR</dt><dd>Tesseract.js 5.1.1, modelo “eng”</dd>
       <dt>Preços</dt><dd>A Liga Pokémon não oferece API pública. O app abre a busca da carta no site da Liga, e o painel de valores mostra números fictícios só para ilustrar o layout.</dd>
@@ -919,7 +919,7 @@ async function showResult(id, warpedCanvas, notes = []) {
         el('div', { class: 'chips' }, ...dx.t.map(t => el('span', { class: 'chip type', style: `background:${DEX_TYPE_COLOR[t]}`, text: DEX_TYPE_PT[t] || t })), ...tags.map(t => el('span', { class: 'chip', text: t }))),
         el('dl', { class: 'kv small' }, el('dt', { text: 'Altura' }), el('dd', { class: 'mono', text: `${(dx.h / 10).toLocaleString('pt-BR')} m` }), el('dt', { text: 'Peso' }), el('dd', { class: 'mono', text: `${(dx.w / 10).toLocaleString('pt-BR')} kg` }), el('dt', { text: 'Geração' }), el('dd', { class: 'mono', text: String(dx.gen) })))),
       dx.f ? el('p', { class: 'flavor small', text: `${dx.f}${dx.fl === 'es' ? ' (texto oficial em espanhol)' : ''}` }) : null,
-      det.flavorText ? el('p', { class: 'flavor small', text: `Na carta: ${det.flavorText}` }) : null,
+      det.flavorText ? el('p', { class: 'flavor small', text: `Na carta (em inglês): ${det.flavorText}` }) : null,
       stats);
   }
 
